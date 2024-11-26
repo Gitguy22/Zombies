@@ -4,3 +4,5 @@ Assets/Real[[:space:]]Stars[[:space:]]Skybox/StarSkybox04Named/CubemapStarsNamed
 Assets/Real[[:space:]]Stars[[:space:]]Skybox/StarSkybox04NamedConstell/CubemapStarsNamedConstellations.cubemap filter=lfs diff=lfs merge=lfs -text
 Assets/Real[[:space:]]Stars[[:space:]]Skybox/StarSkybox04/CubemapStars.cubemap filter=lfs diff=lfs merge=lfs -text
 Library/ArtifactDB filter=lfs diff=lfs merge=lfs -text
+Library/PlayerDateCache/Win64/Data/sharedassets0.assets.resS filter=lfs diff=lfs merge=lfs -text
+Library/PlayerDataCache/Win64/Data/sharedassets0.assets.resS filter=lfs diff=lfs merge=lfs -text

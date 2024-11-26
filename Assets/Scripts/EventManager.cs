@@ -8,6 +8,8 @@ public class EventManager : MonoBehaviour
     [SerializeField] GameObject mainMenu;
     [SerializeField] GameObject levelSelect;
     [SerializeField] GameObject map1Description;
+    [SerializeField] GameObject settingsMenu;
+    [SerializeField] GameObject pauseMenuButtons;
 
     // Start is called before the first frame update
     void Start()
@@ -54,5 +56,17 @@ public class EventManager : MonoBehaviour
         public void DisableMap1Description()
     {
         map1Description.SetActive(false);
+    }
+
+    public void ResumeGame()
+    {
+        Time.timeScale = 1;
+    }
+
+    public void EnableSettingsMenu()
+    {
+        settingsMenu.SetActive(true);
+        pauseMenuButtons.SetActive(false);
+
     }
 }

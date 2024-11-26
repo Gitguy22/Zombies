@@ -1,15 +1,21 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using TMPro;
 
 public class PlayerMovement : MonoBehaviour
 {
     private CharacterController controller;
     private Vector3 playerVelocity;
-    private PlayerInputs playerInput;  // This is your generated input class
+    private PlayerInputs playerInput;  // This is the input class
     private InputAction movementAction;
     private InputAction jumpAction;
     private InputAction sprintAction;
+    private InputAction pauseAction;
+
+    [SerializeField] GameObject pauseMenu;
 
     public float walkSpeed = 5f;
     public float sprintSpeed = 10f;
@@ -18,6 +24,8 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isGrounded;
     private float currentSpeed;
+
+    public bool isPaused;
 
     void Start()
     {
@@ -31,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
         movementAction = playerInput.OnFoot.Movement;
         jumpAction = playerInput.OnFoot.Jump;
         sprintAction = playerInput.OnFoot.Sprint;
+        pauseAction = playerInput.OnFoot.Pause;
 
         // Register sprint action callbacks
         sprintAction.started += ctx => StartSprinting();
@@ -42,8 +51,17 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        // Handle movement and jumping logic
-        HandleMovement();
+        if (pauseAction.triggered)
+        {
+            isPaused =! isPaused;
+            PauseGame();
+        }
+
+        if(isPaused == false)
+        {
+            HandleMovement();
+        }
+        
 
         // Apply gravity
         playerVelocity.y += gravity * Time.deltaTime;
@@ -73,6 +91,9 @@ public class PlayerMovement : MonoBehaviour
         {
             playerVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
+
+        // Pause game
+        
     }
 
     private void StartSprinting()
@@ -90,5 +111,29 @@ public class PlayerMovement : MonoBehaviour
         // Clean up input callbacks when the object is disabled
         sprintAction.started -= ctx => StartSprinting();
         sprintAction.canceled -= ctx => StopSprinting();
+    }
+
+        public void ClickResume()
+    {
+        isPaused =! isPaused;
+        PauseGame();
+    }
+
+    public void PauseGame()
+    {
+        if(isPaused == true)
+        {
+            Time.timeScale = 0;
+            pauseMenu.SetActive(true);
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+        {
+            Time.timeScale = 1;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            pauseMenu.SetActive(false);
+        }
     }
 }
