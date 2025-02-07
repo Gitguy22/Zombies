@@ -9311,6 +9311,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 650817875}
+    - target: {fileID: 4860154213236650212, guid: a9b6df2af86a8d74da851b93a3fad4c0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4860154213280095723, guid: a9b6df2af86a8d74da851b93a3fad4c0, type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -9455,6 +9459,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 650817875}
+    - target: {fileID: 4860154214242170021, guid: a9b6df2af86a8d74da851b93a3fad4c0, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9b6df2af86a8d74da851b93a3fad4c0, type: 3}
 --- !u!1001 &5452898069337870978

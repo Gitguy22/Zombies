@@ -8,10 +8,7 @@ public class PlayerLook : MonoBehaviour
     public float xRotation = 0f;
     public float xSensitivity = 30f;
     public float ySensitivity = 30f;
-
-    private float bobFrequency = 10f;
-    private float bobAmount = 0.05f;
-    private float bobTimer = 0f;
+    
     private bool isSprinting = false;
 
     void Start()
@@ -31,19 +28,6 @@ public class PlayerLook : MonoBehaviour
         transform.Rotate(Vector3.up * (mouseX * Time.deltaTime) * xSensitivity);
     }
 
-    //public void UpdateCameraBobbing()
-    //{
-        //if (isSprinting)
-        //{
-            //bobTimer += Time.deltaTime * bobFrequency;
-            //cam.transform.localPosition = new Vector3(cam.transform.localPosition.x, Mathf.Sin(bobTimer) * bobAmount, cam.transform.localPosition.z);
-        //}
-        //else
-        //{
-            //bobTimer = 0f;
-            //cam.transform.localPosition = new Vector3(cam.transform.localPosition.x, 0, cam.transform.localPosition.z);
-        //}
-    //}
 
     public void SetSprinting(bool sprinting)
     {
@@ -52,6 +36,5 @@ public class PlayerLook : MonoBehaviour
 
     void Update()
     {
-        //UpdateCameraBobbing();
     }
 }

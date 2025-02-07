@@ -123,22 +123,59 @@ public class RoundManager : MonoBehaviour
 
     void CheckDestroyedObstacles()
     {
+        // Check if currentArea is null to avoid null reference
+        if (currentArea == null)
+        {
+            Debug.LogWarning("currentArea is null. Ensure it is properly initialized.");
+            return;
+        }
+
+        // Check if obstacleDependentSpawnPoints is null
+        if (currentArea.obstacleDependentSpawnPoints == null)
+        {
+            Debug.LogWarning("obstacleDependentSpawnPoints is null in currentArea.");
+            return;
+        }
+
         foreach (var obstacleSet in currentArea.obstacleDependentSpawnPoints)
         {
-            if (obstacleSet.obstacle == null) // If the obstacle is destroyed
+            // Check if obstacleSet is null
+            if (obstacleSet == null)
             {
-                foreach (var spawnPoint in obstacleSet.spawnPoints)
-                {
-                    if (!activeSpawnPoints.Contains(spawnPoint))
-                    {
-                        activeSpawnPoints.Add(spawnPoint);
+                Debug.LogWarning("obstacleSet is null. Skipping.");
+                continue; // Skip this iteration
+            }
 
-                        // Initialize last spawn time for the new spawn point
-                        if (!spawnPointLastSpawnTime.ContainsKey(spawnPoint))
+            // Check if the obstacle is null
+            if (obstacleSet.obstacle == null)
+            {
+                // If the obstacle is destroyed, handle the spawn points
+                if (obstacleSet.spawnPoints != null)
+                {
+                    foreach (var spawnPoint in obstacleSet.spawnPoints)
+                    {
+                        // Check if spawnPoint is null
+                        if (spawnPoint == null)
                         {
-                            spawnPointLastSpawnTime[spawnPoint] = -Mathf.Infinity;
+                            Debug.LogWarning("spawnPoint is null. Skipping.");
+                            continue; // Skip this spawn point if it's null
+                        }
+
+                        if (!activeSpawnPoints.Contains(spawnPoint))
+                        {
+                            activeSpawnPoints.Add(spawnPoint);
+
+                            // Initialize last spawn time for the new spawn point
+                            if (!spawnPointLastSpawnTime.ContainsKey(spawnPoint))
+                            {
+                                spawnPointLastSpawnTime[spawnPoint] = -Mathf.Infinity;
+                            }
                         }
                     }
+                }
+                else
+                {
+                    Debug.LogWarning("spawnPoints is null for an obstacleSet.");
                 }
             }
         }

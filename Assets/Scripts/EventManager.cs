@@ -45,7 +45,7 @@ public class EventManager : MonoBehaviour
 
     public void LoadMap1()
     {
-        SceneManager.LoadScene("SampleScene");
+        SceneManager.LoadScene("MainMainScene");
     }
 
     public void EnableMap1Description()
