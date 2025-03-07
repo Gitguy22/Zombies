@@ -116,6 +116,15 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""InteractAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""438a9b17-7cdd-4df9-9199-74b7895266b9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -459,6 +468,28 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""action"": ""Reload"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cde6c41d-b49d-4685-a3f3-0c98dc3ac38a"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""InteractAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""530f4e4a-6dcb-4f0f-8cac-6b2f694d8ef2"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""InteractAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -477,6 +508,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         m_OnFoot_Sprint = m_OnFoot.FindAction("Sprint", throwIfNotFound: true);
         m_OnFoot_Pause = m_OnFoot.FindAction("Pause", throwIfNotFound: true);
         m_OnFoot_Reload = m_OnFoot.FindAction("Reload", throwIfNotFound: true);
+        m_OnFoot_InteractAction = m_OnFoot.FindAction("InteractAction", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -548,6 +580,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_OnFoot_Sprint;
     private readonly InputAction m_OnFoot_Pause;
     private readonly InputAction m_OnFoot_Reload;
+    private readonly InputAction m_OnFoot_InteractAction;
     public struct OnFootActions
     {
         private @PlayerInputs m_Wrapper;
@@ -562,6 +595,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         public InputAction @Sprint => m_Wrapper.m_OnFoot_Sprint;
         public InputAction @Pause => m_Wrapper.m_OnFoot_Pause;
         public InputAction @Reload => m_Wrapper.m_OnFoot_Reload;
+        public InputAction @InteractAction => m_Wrapper.m_OnFoot_InteractAction;
         public InputActionMap Get() { return m_Wrapper.m_OnFoot; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -601,6 +635,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @Reload.started += instance.OnReload;
             @Reload.performed += instance.OnReload;
             @Reload.canceled += instance.OnReload;
+            @InteractAction.started += instance.OnInteractAction;
+            @InteractAction.performed += instance.OnInteractAction;
+            @InteractAction.canceled += instance.OnInteractAction;
         }
 
         private void UnregisterCallbacks(IOnFootActions instance)
@@ -635,6 +672,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @Reload.started -= instance.OnReload;
             @Reload.performed -= instance.OnReload;
             @Reload.canceled -= instance.OnReload;
+            @InteractAction.started -= instance.OnInteractAction;
+            @InteractAction.performed -= instance.OnInteractAction;
+            @InteractAction.canceled -= instance.OnInteractAction;
         }
 
         public void RemoveCallbacks(IOnFootActions instance)
@@ -664,5 +704,6 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         void OnSprint(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
         void OnReload(InputAction.CallbackContext context);
+        void OnInteractAction(InputAction.CallbackContext context);
     }
 }

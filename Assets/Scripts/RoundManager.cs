@@ -37,15 +37,34 @@ public class RoundManager : MonoBehaviour
     public AudioClip roundStartClip;
     public AudioClip roundEndClip;
 
-    private AudioSource audioSource; 
+    private AudioSource audioSource;
 
     private MapArea currentArea;
 
     // Dictionary to track the last spawn time for each spawn point
     private Dictionary<GameObject, float> spawnPointLastSpawnTime;
 
+    // Reference to the ZombiePool
+    private ZombiePool zombiePool;
+
+    // Flag to track if the round is ending
+    private bool isRoundEnding = false;
+
     void Start()
     {
+        // Get the ZombiePool reference
+        zombiePool = ZombiePool.Instance;
+
+        // If ZombiePool doesn't exist, create one
+        if (zombiePool == null)
+        {
+            GameObject poolObject = new GameObject("ZombiePool");
+            zombiePool = poolObject.AddComponent<ZombiePool>();
+        }
+
+        // Initialize the zombie pool with our zombie prefab
+        zombiePool.Initialize(zombiePrefab, 30);
+
         RoundStart();
         activeSpawnPoints = new List<GameObject>();
         spawnPointLastSpawnTime = new Dictionary<GameObject, float>();
@@ -69,6 +88,12 @@ public class RoundManager : MonoBehaviour
 
     void Update()
     {
+        // Skip updates if the round is ending
+        if (isRoundEnding)
+        {
+            return;
+        }
+
         // Check what area they're in.
         CheckPlayerArea();
 
@@ -84,6 +109,18 @@ public class RoundManager : MonoBehaviour
 
         // Check for destroyed obstacles and update spawn points
         CheckDestroyedObstacles();
+
+        // Update zombiesOnMap based on the active zombies count
+        if (zombiePool != null)
+        {
+            zombiesOnMap = zombiePool.ActiveZombieCount();
+
+            // Check if we need to end the round
+            if (zombiesLeft <= 0 && zombiesOnMap <= 0 && !isRoundEnding)
+            {
+                RoundEnd();
+            }
+        }
     }
 
     void CheckPlayerArea()
@@ -211,17 +248,42 @@ public class RoundManager : MonoBehaviour
         int index = Random.Range(0, availableSpawnPoints.Count);
         GameObject randomSpawnPoint = availableSpawnPoints[index];
 
-        // Instantiate the zombie at the random spawn point
-        Instantiate(zombiePrefab, randomSpawnPoint.transform.position, Quaternion.identity);
-        zombiesOnMap++;
-        zombiesLeft--;
+        // Use zombie pool to get a zombie
+        if (zombiePool != null)
+        {
+            GameObject zombie = zombiePool.GetZombie(randomSpawnPoint.transform.position, Quaternion.identity);
 
-        // Update the last spawn time for the chosen spawn point
-        spawnPointLastSpawnTime[randomSpawnPoint] = currentTime;
+            if (zombie != null)
+            {
+                // Configure the zombie
+                ZombieAI zombieAI = zombie.GetComponent<ZombieAI>();
+                if (zombieAI != null)
+                {
+                    zombieAI.player = player;
+                    zombieAI.roundManager = gameObject;
+                }
+
+                zombiesLeft--;
+
+                // Update the last spawn time for the chosen spawn point
+                spawnPointLastSpawnTime[randomSpawnPoint] = currentTime;
+            }
+        }
+        else
+        {
+            Debug.LogError("ZombiePool is not available!");
+        }
     }
 
     public void RoundEnd()
     {
+        if (isRoundEnding)
+        {
+            return; // Prevent multiple calls
+        }
+
+        isRoundEnding = true;
+
         // Play round end music
         PlayRoundAudio(roundEndClip);
 
@@ -234,10 +296,19 @@ public class RoundManager : MonoBehaviour
 
         currentRound++;
         Debug.Log("Round " + currentRound + " started.");
+
+        // Clear any remaining zombies
+        if (zombiePool != null)
+        {
+            zombiePool.ReturnAllZombies();
+        }
+
         zombiesOnMap = 0;
         UpdateRoundText();
         PlayRoundAudio(roundStartClip);
         RoundStart();
+
+        isRoundEnding = false;
     }
 
     private void RoundStart()

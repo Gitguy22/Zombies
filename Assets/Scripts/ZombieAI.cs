@@ -30,21 +30,84 @@ public class ZombieAI : MonoBehaviour
     private float spacingForce = 3f;
     private LayerMask zombieLayer;
 
+    // Coroutine reference for death timer
+    private Coroutine deathCoroutine;
+
     void Start()
     {
-        myAnim = GetComponent<Animator>();
-        ragdollRigids = new List<Rigidbody>(GetComponentsInChildren<Rigidbody>());
-        ragdollRigids.Remove(GetComponent<Rigidbody>());
-        DeactivateRagdoll();
-        zombieLayer = LayerMask.GetMask("Zombie"); // Make sure zombies are on this layer
+        Initialize();
     }
 
-    void Awake()
+    void Initialize()
     {
-        int currentRound = roundManager.GetComponent<RoundManager>().currentRound;
-        zombieHP = currentRound * 150;
-        SetZombieType(currentRound);
+        if (player == null)
+        {
+            player = GameObject.FindGameObjectWithTag("Player");
+        }
+
+        if (roundManager == null)
+        {
+            roundManager = GameObject.FindGameObjectWithTag("RoundManager");
+        }
+
+        myAnim = GetComponent<Animator>();
+
+        // Always reinitialize the ragdollRigids list
+        ragdollRigids = new List<Rigidbody>(GetComponentsInChildren<Rigidbody>());
+
+        // Remove the main rigidbody if there is one
+        Rigidbody mainRigidbody = GetComponent<Rigidbody>();
+        if (mainRigidbody != null && ragdollRigids.Contains(mainRigidbody))
+        {
+            ragdollRigids.Remove(mainRigidbody);
+        }
+
+        DeactivateRagdoll();
+
+        zombieLayer = LayerMask.GetMask("Zombie");
+
+        InitializeZombieProperties();
+    }
+
+    void InitializeZombieProperties()
+    {
+        if (roundManager != null)
+        {
+            int currentRound = roundManager.GetComponent<RoundManager>().currentRound;
+            zombieHP = currentRound * 150;
+            SetZombieType(currentRound);
+        }
+        else
+        {
+            zombieHP = 150;  // Default value if roundManager is not found
+            SetZombieType(1);
+        }
+
         dead = false;
+    }
+
+    // This method is called when the zombie is retrieved from the pool
+    public void ResetZombie()
+    {
+        // Stop any active death coroutines
+        if (deathCoroutine != null)
+        {
+            StopCoroutine(deathCoroutine);
+            deathCoroutine = null;
+        }
+
+        // Reset properties
+        DeactivateRagdoll();
+        dead = false;
+
+        // Re-initialize the zombie
+        Initialize();
+
+        // Make sure the NavMeshAgent is enabled
+        if (agent != null)
+        {
+            agent.enabled = true;
+        }
     }
 
     void SetZombieType(int round)
@@ -72,7 +135,7 @@ public class ZombieAI : MonoBehaviour
 
     void Update()
     {
-        if (!dead)
+        if (!dead && player != null && agent != null && agent.enabled)
         {
             Vector3 targetPosition = player.transform.position;
             Vector3 spacingOffset = CalculateSpacingOffset();
@@ -106,12 +169,15 @@ public class ZombieAI : MonoBehaviour
 
     void UpdateAnimations()
     {
-        float speed = agent.velocity.magnitude;
+        if (myAnim != null)
+        {
+            float speed = agent.velocity.magnitude;
 
-        myAnim.SetBool("isIdle", speed < 0.1f);
-        myAnim.SetBool("isWalking", zombieType == ZombieType.Walker && speed > 0.1f);
-        myAnim.SetBool("isRunning", zombieType == ZombieType.Runner && speed > 0.1f);
-        myAnim.SetBool("isSprinting", zombieType == ZombieType.Sprinter && speed > 0.1f);
+            myAnim.SetBool("isIdle", speed < 0.1f);
+            myAnim.SetBool("isWalking", zombieType == ZombieType.Walker && speed > 0.1f);
+            myAnim.SetBool("isRunning", zombieType == ZombieType.Runner && speed > 0.1f);
+            myAnim.SetBool("isSprinting", zombieType == ZombieType.Sprinter && speed > 0.1f);
+        }
     }
 
     public bool GetHit(float damage, Vector3 hitPoint, Vector3 hitDirection)
@@ -127,6 +193,8 @@ public class ZombieAI : MonoBehaviour
             {
                 Debug.Log("Zombie died from this hit");
                 dead = true;
+                lastHitPoint = hitPoint;
+                lastHitForce = hitDirection;
                 Death(hitPoint, hitDirection);
                 return true; // Return true to indicate a kill
             }
@@ -136,9 +204,15 @@ public class ZombieAI : MonoBehaviour
 
     public void Death(Vector3 hitPoint, Vector3 hitDirection)
     {
-        ActivateRagdoll();
-        agent.ResetPath();
+        // Disable NavMeshAgent to prevent movement
+        if (agent != null)
+        {
+            agent.enabled = false;
+        }
 
+        ActivateRagdoll();
+
+        // Apply force to ragdoll parts
         foreach (var rb in ragdollRigids)
         {
             float distance = Vector3.Distance(rb.position, hitPoint);
@@ -148,30 +222,47 @@ public class ZombieAI : MonoBehaviour
             }
         }
 
-        StartCoroutine(ResetTimer());
+        // Start the death timer coroutine
+        deathCoroutine = StartCoroutine(DeathTimer());
     }
 
-    private IEnumerator ResetTimer()
+    private IEnumerator DeathTimer()
     {
         yield return new WaitForSeconds(15.0f);
-        Reset();
-    }
 
-    public void Reset()
-    {
-        DeactivateRagdoll();
-        dead = false;
+        // Return this zombie to the pool
+        if (ZombiePool.Instance != null)
+        {
+            ZombiePool.Instance.ReturnZombie(gameObject);
+        }
+        else
+        {
+            // If there's no pool, just destroy the zombie
+            Destroy(gameObject);
+        }
     }
 
     void ActivateRagdoll()
     {
-        myAnim.enabled = false;
+        if (myAnim != null)
+        {
+            myAnim.enabled = false;
+        }
+
+        // Check if the list exists and has elements
+        if (ragdollRigids == null || ragdollRigids.Count == 0)
+        {
+            ragdollRigids = new List<Rigidbody>(GetComponentsInChildren<Rigidbody>());
+            ragdollRigids.Remove(GetComponent<Rigidbody>());
+        }
 
         Rigidbody closestRigidbody = null;
         float closestDistance = float.MaxValue;
 
         foreach (var rb in ragdollRigids)
         {
+            if (rb == null) continue; // Skip if rigidbody is null
+
             rb.useGravity = true;
             rb.isKinematic = false;
 
@@ -191,7 +282,38 @@ public class ZombieAI : MonoBehaviour
 
     void DeactivateRagdoll()
     {
-        myAnim.enabled = true;
-        foreach (var rb in ragdollRigids) { rb.useGravity = false; rb.isKinematic = true; }
+        if (myAnim != null)
+        {
+            myAnim.enabled = true;
+        }
+
+        // Check if the list exists and has elements before trying to use it
+        if (ragdollRigids != null && ragdollRigids.Count > 0)
+        {
+            foreach (var rb in ragdollRigids)
+            {
+                if (rb != null) // Additional null check for each rigidbody
+                {
+                    rb.useGravity = false;
+                    rb.isKinematic = true;
+                }
+            }
+        }
+        else
+        {
+            // Reinitialize the list if it's null or empty
+            ragdollRigids = new List<Rigidbody>(GetComponentsInChildren<Rigidbody>());
+            ragdollRigids.Remove(GetComponent<Rigidbody>());
+
+            // Then deactivate each rigidbody
+            foreach (var rb in ragdollRigids)
+            {
+                if (rb != null)
+                {
+                    rb.useGravity = false;
+                    rb.isKinematic = true;
+                }
+            }
+        }
     }
 }

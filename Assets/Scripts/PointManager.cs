@@ -39,6 +39,12 @@ public class PointManager : MonoBehaviour
         UpdatePointsText(owner);
     }
 
+    public void TakePoints(GameObject owner, int pointsToTake)
+    {
+        playerPoints[owner] -= pointsToTake;
+        UpdatePointsText(owner);
+    }
+
     public void SetOwner(GameObject owner)
     {
         if (owner == null) return;
