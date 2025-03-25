@@ -16,7 +16,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 1
   m_IsActive: 1
 --- !u!4 &1715789372464897781
 Transform:
@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2657687600045600427}
-  m_LocalRotation: {x: 0.32650557, y: 0.6272114, z: 0.6272114, w: 0.32650554}
+  m_LocalRotation: {x: 0.32650563, y: 0.6272114, z: 0.6272114, w: 0.32650563}
   m_LocalPosition: {x: -1.288, y: 3.397, z: -4.022}
   m_LocalScale: {x: 1.0000002, y: 1.0000002, z: 1.0000001}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -35, y: 90, z: 90}
 --- !u!33 &3895678975362012527
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -54,6 +54,8 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -78,3 +80,4 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}

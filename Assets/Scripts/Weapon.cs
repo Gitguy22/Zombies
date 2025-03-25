@@ -1,31 +1,58 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
-using System.Collections;
 
 
 public class Weapon : MonoBehaviour
 {
-    // Combat properties determine the weapon's effectiveness and feel
     [Header("Combat Settings")]
     [SerializeField] private int weaponDamage;
     [SerializeField] private float bulletVelocity = 100f;
     [SerializeField] private float maxRange = 100f;
+    [SerializeField] private bool isAutomatic = false;  // Controls if weapon is automatic
+    [SerializeField] private float fireRate = 10f;      // Rounds per second (when automatic)
 
-    // Spread settings affect accuracy - higher variance means less accurate
+    [Header("Aiming")]
+    [SerializeField] private Transform aimSightTransform;
+    [SerializeField] private float aimFOV = 40f;
+    [SerializeField] private float regularFOV = 60f;
+    [SerializeField] private float aimTransitionSpeed = 10f;
+    private Vector3 defaultWeaponPosition;
+    private Quaternion defaultWeaponRotation;
+    private Vector3 aimPosition;
+    private bool isAiming = false;
+    private Camera mainCamera;
+    private InputAction aimAction;
+
+    // higher variance means less accurate
     [Header("Bullet Spread")]
     [SerializeField] private bool addBulletSpread = true;
     [SerializeField] private Vector3 bulletSpreadVariance = new Vector3(0.1f, 0.1f, 0.1f);
 
-    // VFX components for visual feedback
+    [Header("Recoil Settings")]
+    [SerializeField] private float recoilVerticalStrength = 1f;   
+    [SerializeField] private float recoilHorizontalStrength = 0.3f; 
+    [SerializeField] private float recoilVerticalRandomness = 0.1f; 
+    [SerializeField] private float recoilHorizontalRandomness = 0.2f;
+    [SerializeField] private float recoilRecoverySpeed = 10f;
+    [SerializeField] private bool applyRecoil = true;
+
+    [Header("Weapon Shake")]
+    [SerializeField] private float weaponShakeIntensity = 0.05f;
+    [SerializeField] private float weaponShakeDuration = 0.1f;
+    [SerializeField] private AnimationCurve weaponShakeCurve = AnimationCurve.EaseInOut(0, 1, 1, 0);
+    private Vector3 weaponOriginPosition;
+    private Coroutine shakeCoroutine;
+
     [Header("Visual Effects")]
     [SerializeField] private ParticleSystem shootingSystem;
     [SerializeField] private ParticleSystem impactParticleSystem;
     [SerializeField] private TrailRenderer bulletTracer;
-    [SerializeField] private float minTrailDuration = 0.1f; // Ensures trails are visible even for close-range shots
+    [SerializeField] private float minTrailDuration = 0.1f;
     [SerializeField] private Transform barrelExit;
 
-    // Ammo system configuration
     [Header("Ammunition")]
     [SerializeField] private int magCapacity;
     [SerializeField] private int maxReserves;
@@ -53,6 +80,8 @@ public class Weapon : MonoBehaviour
     private AudioSource audioSource;
     private PointManager points;
     private GameObject owner;
+    private PlayerLook playerLook;
+    private ZombieAI zombie;
 
     private InputAction shootAction;
     private InputAction reloadAction;
@@ -61,6 +90,7 @@ public class Weapon : MonoBehaviour
     private int ammoInReserves;
     private float lastShootTime;
     private bool isReloading;
+    private bool isFiring; 
 
     // Track combat results for scoring and feedback
     private bool gotHit;
@@ -69,7 +99,7 @@ public class Weapon : MonoBehaviour
 
     private void OnEnable()
     {
-        // Owner reference is used for score attribution
+        // Owner reference is used for points and stuff
         owner = transform.root.gameObject;
     }
 
@@ -83,12 +113,34 @@ public class Weapon : MonoBehaviour
         InitializeInputSystem();
         InitializeAmmo();
         points = pointManager.GetComponent<PointManager>();
+        playerLook = owner.GetComponent<PlayerLook>();
+        weaponOriginPosition = transform.localPosition;
+
+        if (playerLook == null)
+        {
+            Debug.LogWarning("PlayerLook component not found on the owner. Recoil will not work.");
+        }
+
+        mainCamera = Camera.main;
+        defaultWeaponPosition = transform.localPosition;
+        defaultWeaponRotation = transform.localRotation;
+        if (aimSightTransform == null)
+        {
+            Debug.LogWarning("Aim sight transform not assigned. Creating a default one.");
+            GameObject aimSight = new GameObject("AimSight");
+            aimSight.transform.SetParent(transform);
+            aimSight.transform.localPosition = new Vector3(0, 0.02f, 0.2f);
+            aimSightTransform = aimSight.transform;
+        }
+        aimPosition = CalculateAimPosition();
     }
 
     private void Update()
     {
         HandleInput();
+        HandleAutomaticFire();
         UpdateAmmoUI();
+        HandleAiming();
     }
 
     private void InitializeComponents()
@@ -104,6 +156,13 @@ public class Weapon : MonoBehaviour
 
         shootAction = playerInput.OnFoot.Shoot;
         reloadAction = playerInput.OnFoot.Reload;
+
+        // Callbacks for tracking when fire button is pressed and released
+        shootAction.started += ctx => isFiring = true;
+        shootAction.canceled += ctx => isFiring = false;
+        aimAction = playerInput.OnFoot.Aim;
+        aimAction.started += ctx => StartAiming();
+        aimAction.canceled += ctx => StopAiming();
     }
 
     private void InitializeAmmo()
@@ -114,7 +173,7 @@ public class Weapon : MonoBehaviour
 
     private void HandleInput()
     {
-        if (shootAction.triggered && Time.time >= lastShootTime)
+        if (!isAutomatic && shootAction.triggered && Time.time >= lastShootTime)
         {
             OnShoot();
         }
@@ -125,7 +184,14 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    // Checks all conditions that might prevent reloading
+    private void HandleAutomaticFire()
+    {
+        if (isAutomatic && isFiring && Time.time >= lastShootTime + (1f / fireRate))
+        {
+            OnShoot();
+        }
+    }
+
     private bool CanReload()
     {
         return ammoInReserves > 0 && ammoInMag < magCapacity && !isReloading;
@@ -154,6 +220,12 @@ public class Weapon : MonoBehaviour
     private void ExecuteShot()
     {
         PlayShootingEffects();
+
+        if (shakeCoroutine != null)
+            StopCoroutine(shakeCoroutine);
+        shakeCoroutine = StartCoroutine(ShakeWeapon());
+
+        ApplyRecoil();
         Vector3 direction = CalculateBulletDirection();
 
         // Perform the actual raycast for hit detection
@@ -170,12 +242,103 @@ public class Weapon : MonoBehaviour
         lastShootTime = Time.time;
     }
 
+    private void ApplyRecoil()
+    {
+        if (!applyRecoil || playerLook == null) return;
+
+        // Calculate recoil with randomness
+        float verticalRecoil = -recoilVerticalStrength;
+        float horizontalRecoil = Random.Range(-recoilHorizontalStrength, recoilHorizontalStrength);
+
+        // Apply randomness
+        verticalRecoil += Random.Range(-recoilVerticalRandomness, recoilVerticalRandomness);
+        horizontalRecoil += Random.Range(-recoilHorizontalRandomness, recoilHorizontalRandomness);
+
+        // Apply recoil through the PlayerLook component
+        playerLook.AddRecoil(new Vector2(horizontalRecoil, verticalRecoil), recoilRecoverySpeed);
+    }
+
+    private IEnumerator ShakeWeapon()
+    {
+        float elapsed = 0f;
+
+        while (elapsed < weaponShakeDuration)
+        {
+            float strength = weaponShakeCurve.Evaluate(elapsed / weaponShakeDuration);
+            Vector3 shakeAmount = new Vector3(
+                Random.Range(-1f, 1f) * weaponShakeIntensity,
+                Random.Range(0.5f, 1f) * weaponShakeIntensity, // Biased upward for recoil effect
+                0
+            ) * strength;
+
+            transform.localPosition = weaponOriginPosition + shakeAmount;
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.localPosition = weaponOriginPosition;
+    }
+
+    private void HandleAiming()
+    {
+        if (isAiming)
+        {
+            // move weapon to aim position
+            //transform.localPosition = Vector3.Lerp(transform.localPosition, aimPosition, Time.deltaTime * aimTransitionSpeed);
+
+            //adjust FOV
+            if (mainCamera != null)
+                mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, aimFOV, Time.deltaTime * aimTransitionSpeed);
+        }
+        else
+        {
+            // Return to default position (unless currently being shaken)
+            if (shakeCoroutine == null)
+                transform.localPosition = Vector3.Lerp(transform.localPosition, defaultWeaponPosition, Time.deltaTime * aimTransitionSpeed);
+
+            // Return to regular FOV
+            if (mainCamera != null)
+                mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, regularFOV, Time.deltaTime * aimTransitionSpeed);
+        }
+    }
+
+    private Vector3 CalculateAimPosition()
+    {
+        //the position that would place the aimSightTransform at screen center
+        if (mainCamera == null) return defaultWeaponPosition;
+
+        // Convert the sight's position to world space
+        Vector3 sightWorldPos = aimSightTransform.position;
+
+        // Find the offset vector from the weapon to the sight
+        Vector3 sightOffset = sightWorldPos - transform.position;
+
+        // Calculate how much to move the weapon so the sight is at screen center
+        Vector3 targetPosition = defaultWeaponPosition - sightOffset;
+
+        return targetPosition;
+    }
+
+    private void StartAiming()
+    {
+        isAiming = true;
+        if (playerLook != null)
+            playerLook.SetAiming(true);
+    }
+
+    private void StopAiming()
+    {
+        isAiming = false;
+        if (playerLook != null)
+            playerLook.SetAiming(false);
+    }
+
     private void HandleHit(RaycastHit hit, Vector3 direction)
     {
         TrailRenderer trail = Instantiate(bulletTracer, barrelExit.transform.position, Quaternion.identity);
         StartCoroutine(SpawnTrail(trail, hit.point, hit));
-
-        // Visualize bullet path in debug view for 100s 
+ 
         Debug.DrawLine(barrelExit.transform.position, hit.point, Color.red, 100f);
 
         Vector3 hitDirection = CalculateHitDirection(hit.point);
@@ -207,15 +370,13 @@ public class Weapon : MonoBehaviour
     // Handles damage to removable limbs and tracks which part was hit
     private void HandleLimbDamage(Limb limb, Vector3 hitPoint, Vector3 hitDirection)
     {
-        // Check if limb is null
         if (limb == null)
         {
             Debug.LogWarning("Attempted to handle damage for a null limb");
             return;
         }
 
-        // Get the zombie component with null check
-        ZombieAI zombie = limb.transform.root.GetComponent<ZombieAI>();
+        ZombieAI zombie = FindZombieComponent(limb.transform);
 
         // Check if we found a valid zombie
         if (zombie == null)
@@ -230,7 +391,6 @@ public class Weapon : MonoBehaviour
 
     private void HandleNonAmputatableLimbDamage(NonAmputatableLimb nLimb, Vector3 hitPoint, Vector3 hitDirection)
     {
-        // Check if nLimb is null
         if (nLimb == null)
         {
             Debug.LogWarning("Attempted to handle damage for a null non-amputatable limb");
@@ -238,7 +398,7 @@ public class Weapon : MonoBehaviour
         }
 
         // Get the zombie component with null check
-        ZombieAI zombie = nLimb.transform.root.GetComponent<ZombieAI>();
+        ZombieAI zombie = FindZombieComponent(nLimb.transform);
 
         // Check if we found a valid zombie
         if (zombie == null)
@@ -356,7 +516,6 @@ public class Weapon : MonoBehaviour
         animator.SetBool("CanReload", false);
     }
 
-    // Handles interruption of reload animation when shooting
     private void CancelReload()
     {
         var currentClip = animator.GetCurrentAnimatorClipInfo(0);
@@ -384,5 +543,37 @@ public class Weapon : MonoBehaviour
         {
             return;
         }
+    }
+
+    // Was having issues with being able to get the zombie component so I just made two ways to find it
+    private ZombieAI FindZombieComponent(Transform limbTransform)
+    {
+        //try traversing up the hierarchy
+        Transform current = limbTransform;
+        ZombieAI foundZombie = null; // Use local variable instead of class field
+
+        while (current != null)
+        {
+            foundZombie = current.GetComponent<ZombieAI>();
+            if (foundZombie != null) return foundZombie;
+            current = current.parent;
+        }
+
+        Debug.LogWarning($"Could not find ZombieAI component. Hierarchy: {GetHierarchyPath(limbTransform)}");
+        return null;
+    }
+
+    private string GetHierarchyPath(Transform transform)
+    {
+        string path = transform.name;
+        Transform current = transform.parent;
+
+        while (current != null)
+        {
+            path = current.name + "/" + path;
+            current = current.parent;
+        }
+
+        return path;
     }
 }

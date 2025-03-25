@@ -125,6 +125,15 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Aim"",
+                    ""type"": ""Button"",
+                    ""id"": ""c5633f14-5578-4a92-8a4c-458558c02c74"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -417,7 +426,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""f998e163-afad-475a-bf07-310b72677f3d"",
-                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""path"": ""<Gamepad>/leftStickPress"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -490,6 +499,28 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""action"": ""InteractAction"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0b540f25-f3c5-49db-b70f-0affe30de481"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Aim"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bfe0e2ef-ddd5-4dd8-b929-9b09ddb6631b"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Aim"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -509,6 +540,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         m_OnFoot_Pause = m_OnFoot.FindAction("Pause", throwIfNotFound: true);
         m_OnFoot_Reload = m_OnFoot.FindAction("Reload", throwIfNotFound: true);
         m_OnFoot_InteractAction = m_OnFoot.FindAction("InteractAction", throwIfNotFound: true);
+        m_OnFoot_Aim = m_OnFoot.FindAction("Aim", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -581,6 +613,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_OnFoot_Pause;
     private readonly InputAction m_OnFoot_Reload;
     private readonly InputAction m_OnFoot_InteractAction;
+    private readonly InputAction m_OnFoot_Aim;
     public struct OnFootActions
     {
         private @PlayerInputs m_Wrapper;
@@ -596,6 +629,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         public InputAction @Pause => m_Wrapper.m_OnFoot_Pause;
         public InputAction @Reload => m_Wrapper.m_OnFoot_Reload;
         public InputAction @InteractAction => m_Wrapper.m_OnFoot_InteractAction;
+        public InputAction @Aim => m_Wrapper.m_OnFoot_Aim;
         public InputActionMap Get() { return m_Wrapper.m_OnFoot; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -638,6 +672,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @InteractAction.started += instance.OnInteractAction;
             @InteractAction.performed += instance.OnInteractAction;
             @InteractAction.canceled += instance.OnInteractAction;
+            @Aim.started += instance.OnAim;
+            @Aim.performed += instance.OnAim;
+            @Aim.canceled += instance.OnAim;
         }
 
         private void UnregisterCallbacks(IOnFootActions instance)
@@ -675,6 +712,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @InteractAction.started -= instance.OnInteractAction;
             @InteractAction.performed -= instance.OnInteractAction;
             @InteractAction.canceled -= instance.OnInteractAction;
+            @Aim.started -= instance.OnAim;
+            @Aim.performed -= instance.OnAim;
+            @Aim.canceled -= instance.OnAim;
         }
 
         public void RemoveCallbacks(IOnFootActions instance)
@@ -705,5 +745,6 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         void OnPause(InputAction.CallbackContext context);
         void OnReload(InputAction.CallbackContext context);
         void OnInteractAction(InputAction.CallbackContext context);
+        void OnAim(InputAction.CallbackContext context);
     }
 }

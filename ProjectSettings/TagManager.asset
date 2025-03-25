@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Projectile
   - RoundManager
+  - HiddenFromPlayer
   layers:
   - Default
   - TransparentFX
@@ -18,9 +19,9 @@ TagManager:
   - PostProcessing
   - Player
   - Interactable
-  - 
-  - 
-  - 
+  - HiddenFromPlayer
+  - DoorTriggers
+  - AttacktTriggers
   - 
   - 
   - 

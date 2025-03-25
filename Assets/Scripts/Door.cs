@@ -68,16 +68,16 @@ public class Door : MonoBehaviour, IInteractable
             // Unlock the door
             isPaidFor = true;
             Debug.Log($"Player {player.name} bought {displayName} for {cost} points");
+
+            // Only open the door if the purchase was successful
+            DoorOpen();
         }
         else
         {
             Debug.Log($"Not enough points to open {displayName}!");
             // Maybe play a sound for not enough points
         }
-
-        DoorOpen();
     }
-
     public string GetItemName()
     {
         return displayName;

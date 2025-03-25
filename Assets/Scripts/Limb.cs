@@ -39,7 +39,7 @@ public class Limb : MonoBehaviour
     void Awake()
     {
         roundManager = GameObject.Find("Round Manager");
-        zombie = transform.root.GetComponent<ZombieAI>();
+        zombie = FindZombieComponent(this.transform);
         limbHP = (roundManager.GetComponent<RoundManager>().currentRound * 150) * 0.45f;
     }
 
@@ -56,7 +56,6 @@ public class Limb : MonoBehaviour
             return;
         }
 
-        // Call zombie's GetHit
         if (zombie != null && zombie.zombieHP > 0)
         {
             if (gameObject.name == "mixamorig:Head")
@@ -65,6 +64,7 @@ public class Limb : MonoBehaviour
             }
             else
             {
+                //Debug.Log("zombie got hit");
                 zombie.GetHit(damage, hitPoint, hitForce);
             }
         }
@@ -88,7 +88,6 @@ public class Limb : MonoBehaviour
             hasBeenRemoved = true;
         }
 
-        // Show the wound effect if available
         if (wound != null)
         {
             wound.SetActive(true);
@@ -111,5 +110,62 @@ public class Limb : MonoBehaviour
                 }
             }
         }
+    }
+
+    private ZombieAI FindZombieComponent(Transform limbTransform)
+    {
+
+        //try traversing up the hierarchy
+        Transform current = limbTransform;
+        while (current != null)
+        {
+            zombie = current.GetComponent<ZombieAI>();
+            if (zombie != null) return zombie;
+            current = current.parent;
+        }
+
+        // Log the hierarchy to help debugging
+        Debug.LogWarning($"Could not find ZombieAI component. Hierarchy: {GetHierarchyPath(limbTransform)}");
+        return null;
+    }
+
+    public void ResetLimb()
+    {
+        // Reset the limb's scale to its original size
+        transform.localScale = Vector3.one; // Or whatever the original scale should be
+
+        // Reset the HP based on the current round
+        if (roundManager != null)
+        {
+            limbHP = (roundManager.GetComponent<RoundManager>().currentRound * 150) * 0.45f;
+        }
+        else
+        {
+            // Fallback default
+            limbHP = 150 * 0.45f;
+        }
+
+        // Hide wound if present
+        if (wound != null)
+        {
+            wound.SetActive(false);
+        }
+
+        // Reset the removed flag
+        hasBeenRemoved = false;
+    }
+
+    private string GetHierarchyPath(Transform transform)
+    {
+        string path = transform.name;
+        Transform current = transform.parent;
+
+        while (current != null)
+        {
+            path = current.name + "/" + path;
+            current = current.parent;
+        }
+
+        return path;
     }
 }

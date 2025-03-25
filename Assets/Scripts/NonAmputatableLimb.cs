@@ -8,7 +8,7 @@ public class NonAmputatableLimb : MonoBehaviour
 
     void Awake()
     {
-        zombie = transform.root.GetComponent<ZombieAI>();
+        zombie = FindZombieComponent(this.transform);
     }
 
     public void GetHit(float damage, Vector3 hitPoint, Vector3 hitForce)
@@ -24,5 +24,38 @@ public class NonAmputatableLimb : MonoBehaviour
                 zombie.GetHit(damage, hitPoint, hitForce);
             }
         }
+    }
+
+    private ZombieAI FindZombieComponent(Transform limbTransform)
+    {
+
+        //try traversing up the hierarchy
+        Transform current = limbTransform;
+        while (current != null)
+        {
+            zombie = current.GetComponent<ZombieAI>();
+            if (zombie != null) return zombie;
+            current = current.parent;
+        }
+
+        // Log the hierarchy to help debugging
+        Debug.LogWarning($"Could not find ZombieAI component. Hierarchy: {GetHierarchyPath(limbTransform)}");
+        return null;
+    }
+
+
+
+    private string GetHierarchyPath(Transform transform)
+    {
+        string path = transform.name;
+        Transform current = transform.parent;
+
+        while (current != null)
+        {
+            path = current.name + "/" + path;
+            current = current.parent;
+        }
+
+        return path;
     }
 }

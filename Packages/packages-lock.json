@@ -25,6 +25,13 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.cinemachine": {
+      "version": "2.6.17",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
     "com.unity.collab-proxy": {
       "version": "2.0.7",
       "depth": 0,
@@ -37,15 +44,6 @@
       "depth": 1,
       "source": "registry",
       "dependencies": {},
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.ide.rider": {
-      "version": "3.0.34",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.ext.nunit": "1.0.6"
-      },
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
@@ -89,15 +87,6 @@
       },
       "url": "https://packages.unity.com"
     },
-    "com.unity.probuilder": {
-      "version": "4.5.2",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.settings-manager": "1.0.3"
-      },
-      "url": "https://packages.unity.com"
-    },
     "com.unity.render-pipelines.core": {
       "version": "10.10.1",
       "depth": 1,
@@ -111,13 +100,6 @@
     },
     "com.unity.searcher": {
       "version": "4.3.2",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.settings-manager": {
-      "version": "1.0.3",
       "depth": 1,
       "source": "registry",
       "dependencies": {},

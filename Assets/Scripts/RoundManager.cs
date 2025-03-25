@@ -69,7 +69,7 @@ public class RoundManager : MonoBehaviour
         activeSpawnPoints = new List<GameObject>();
         spawnPointLastSpawnTime = new Dictionary<GameObject, float>();
 
-        audioSource = GetComponent<AudioSource>(); // Get the AudioSource component attached to this GameObject
+        audioSource = GetComponent<AudioSource>();
 
         // Assuming the player starts in the first defined area
         if (mapAreas.Count > 0)
@@ -222,7 +222,7 @@ public class RoundManager : MonoBehaviour
     {
         if (activeSpawnPoints.Count == 0)
         {
-            Debug.LogWarning("No active spawn points available.");
+            //Debug.LogWarning("No active spawn points available.");
             return;
         }
 
@@ -240,7 +240,7 @@ public class RoundManager : MonoBehaviour
 
         if (availableSpawnPoints.Count == 0)
         {
-            Debug.LogWarning("No available spawn points (waiting for cooldown).");
+            //Debug.LogWarning("No available spawn points (waiting for cooldown).");
             return;
         }
 
@@ -283,11 +283,12 @@ public class RoundManager : MonoBehaviour
         }
 
         isRoundEnding = true;
+        Debug.Log("Round " + currentRound + " ended.");
 
         // Play round end music
         PlayRoundAudio(roundEndClip);
 
-        StartCoroutine(StartNextRoundAfterDelay(16f)); // Start next round after a 16-second delay
+        StartCoroutine(StartNextRoundAfterDelay(10f)); // Start next round after a 16-second delay
     }
 
     private IEnumerator StartNextRoundAfterDelay(float delaySeconds)
@@ -313,7 +314,7 @@ public class RoundManager : MonoBehaviour
 
     private void RoundStart()
     {
-        int maxZombiesOnMap = GetMaxZombiesOnMap();
+        // Setting zombies for each round using if statements like in original code
         if (currentRound == 1)
         {
             zombiesLeft = 6;
@@ -350,17 +351,22 @@ public class RoundManager : MonoBehaviour
         {
             zombiesLeft = 29;
         }
-        else // For rounds 10 and above
+        else // For rounds 10 and above - fixed formula to properly scale
         {
-            zombiesLeft = currentRound * 0.15f;
+            // Better formula that increases with round number rather than decreasing
+            zombiesLeft = 30 + (currentRound - 9) * 3;
         }
+
+        Debug.Log($"Round {currentRound} starting with {zombiesLeft} zombies to spawn");
     }
 
     private int GetMaxZombiesOnMap()
     {
         int baseZombies = 24;
         int additionalZombies = playersInGame * 6;
-        return baseZombies + additionalZombies;
+        int roundScaling = Mathf.FloorToInt(currentRound * 0.5f); // Small increase per round
+
+        return baseZombies + additionalZombies + roundScaling;
     }
 
     private void UpdateRoundText()

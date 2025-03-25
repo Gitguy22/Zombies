@@ -65,7 +65,12 @@ public class PlayerInteraction : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, interactionDistance, interactableLayer, QueryTriggerInteraction.Ignore))
         {
+            // First try to get IInteractable directly from the hit object
             IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+
+            // If null, try to get it from the parent object
+            if (interactable == null)
+                interactable = hit.collider.GetComponentInParent<IInteractable>();
 
             if (interactable != null)
             {
@@ -81,6 +86,7 @@ public class PlayerInteraction : MonoBehaviour
             }
         }
 
+        // Rest of method remains unchanged
         if (currentInteractable != null)
         {
             interactableTimer += Time.deltaTime;
@@ -93,6 +99,7 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
+
     private void UpdateInteractionUI(bool show)
     {
         if (interactionPrompt != null)
@@ -100,7 +107,7 @@ public class PlayerInteraction : MonoBehaviour
             if (show && interactionText != null && currentInteractable != null)
             {
                 // Check if the item has already been paid for
-                if (currentInteractableObject.GetComponent<IInteractable>() is Door door && door.IsPaidFor())
+                if (currentInteractable.IsPaidFor())
                 {
                     interactionPrompt.SetActive(false);
                     return;
