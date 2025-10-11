@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77caf8a3f358839448e9d62fa89624f5, type: 3}
+  m_Name: Blue_Decal
+  m_EditorClassIdentifier: 
+  presetName: Blue
+  color: {r: 0.8117647, g: 0.09411765, b: 0.050980393, a: 0.98039216}
+  colorIntensity: 0.64
+  albedoPower: 1.32
+  ambientColorIntensity: 0.15
+  hueshift: -138
+  useSpecularity: 1
+  gravityScale: 0
+  smoothness: 0.8

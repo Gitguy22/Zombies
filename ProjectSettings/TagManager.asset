@@ -7,6 +7,8 @@ TagManager:
   - Projectile
   - RoundManager
   - HiddenFromPlayer
+  - PowerLight
+  - EmergencyLight
   layers:
   - Default
   - TransparentFX
@@ -22,15 +24,15 @@ TagManager:
   - HiddenFromPlayer
   - DoorTriggers
   - AttacktTriggers
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - PlayerCollision
+  - ZombieCollision
+  - Weapon
+  - DeadZombie
+  - HUD1
+  - HUD2
+  - HUD3
+  - HUD4
+  - InvisibleWalls
   - 
   - 
   - 
@@ -43,4 +45,16 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: HUD1
+    uniqueID: 2662648173
+    locked: 0
+  - name: HUD2
+    uniqueID: 1393419053
+    locked: 0
+  - name: HUD3
+    uniqueID: 2626867127
+    locked: 0
+  - name: HUD4
+    uniqueID: 1559764575
     locked: 0

@@ -1,0 +1,143 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Goo
+  m_Shader: {fileID: 4800000, guid: b2a332eca209b8d429c63eafa55c580f, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FlowMap:
+        m_Texture: {fileID: 2800000, guid: 39a00f3a4d887cc448b5d165b19938eb, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FoamTex:
+        m_Texture: {fileID: 2800000, guid: 03695c63955a55240bedc20a1f3929e1, type: 3}
+        m_Scale: {x: 30, y: 30}
+        m_Offset: {x: 0, y: 0}
+    - _HeightMap:
+        m_Texture: {fileID: 2800000, guid: 39a00f3a4d887cc448b5d165b19938eb, type: 3}
+        m_Scale: {x: 20, y: 20}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 03695c63955a55240bedc20a1f3929e1, type: 3}
+        m_Scale: {x: 30, y: 30}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 2800000, guid: 5d5f4575f58c52f4dbf3d0581eba8a12, type: 3}
+        m_Scale: {x: 30, y: 20}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap1:
+        m_Texture: {fileID: 2800000, guid: 03695c63955a55240bedc20a1f3929e1, type: 3}
+        m_Scale: {x: 4, y: 4}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap2:
+        m_Texture: {fileID: 2800000, guid: 03695c63955a55240bedc20a1f3929e1, type: 3}
+        m_Scale: {x: 4, y: 4}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _Amplitude: 0.84
+    - _BubbleHeight: 0.0475
+    - _BubbleIntensity: 1
+    - _BubbleLifetime: 2.34
+    - _BubbleScale: 1.14
+    - _BubbleSize: 0.03
+    - _BubbleSpeed: 2
+    - _BubbleThreshold: 0.9296
+    - _BumpScale: 1
+    - _Cull: 0
+    - _Cutoff: 0.5
+    - _DX11: 2
+    - _DebrisScale: 5.8
+    - _DetailNormalMapScale: 1
+    - _DisplacementAmount: 0.114
+    - _DstBlend: 0
+    - _FlowDistortion: 0.5
+    - _FlowSpeed: 1
+    - _GlossMapScale: 1
+    - _Glossiness: 0.395
+    - _GlossyReflections: 1
+    - _Glossyness: 1.2
+    - _Metallic: 1
+    - _Mode: 0
+    - _NormalStrength: 3
+    - _OcclusionStrength: 1
+    - _Opacity: 1
+    - _Parallax: 0.02
+    - _Refraction: 0.71
+    - _RippleScale: 0.0659
+    - _RippleSpeed: 0.592
+    - _ScumAmount: 0.6
+    - _ScumGloss: 0.352
+    - _Shadows: 0
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _Speed: 0.01
+    - _SrcBlend: 1
+    - _SubsurfaceIntensity: 1
+    - _UVSec: 0
+    - _WaveAmplitude: 0.169
+    - _WaveFrequency: 1.04
+    - _ZWrite: 1
+    - _isToggled: 0
+    - _motion: 0.002
+    - _waterNorms: 0.59
+    - _water_height: 0.39
+    m_Colors:
+    - _BaseColor: {r: 0.14337485, g: 0.6132076, b: 0.1237985, a: 1}
+    - _BubbleColor: {r: 0.4662832, g: 0.745283, b: 0.19264857, a: 0.8}
+    - _Color: {r: 1.3657886, g: 3.478208, b: 0, a: 1}
+    - _DebrisColor: {r: 0, g: 1, b: 0.027443886, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FlowDirection: {r: 1, g: 4, b: 3, a: 0}
+    - _FoamColor: {r: 1, g: 1, b: 1, a: 1}
+    - _MurkyColor: {r: 0.2653584, g: 0.4339623, b: 0.144927, a: 1}
+    - _ScumColor: {r: 0.254717, g: 0.228395, b: 0.16917053, a: 1}
+    - _SecondaryColor: {r: 0.23899384, g: 0.7169812, b: 0, a: 1}
+    - _SubsurfaceColor: {r: 0.24318603, g: 0.7924528, b: 0.13755782, a: 1}
+    - _specColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_BuildTextureStacks: []

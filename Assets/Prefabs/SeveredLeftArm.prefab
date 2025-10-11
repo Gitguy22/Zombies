@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4128790711673973798}
   - component: {fileID: 5584691431212525618}
   - component: {fileID: 243605876303832018}
+  - component: {fileID: -6834821869042023155}
   m_Layer: 0
   m_Name: SeveredLeftArm
   m_TagString: Untagged
@@ -98,3 +99,17 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!64 &-6834821869042023155
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4303171092931081862}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 5372008998117358396, guid: ee163e3805e032649b39f9ec157e8f0f, type: 3}

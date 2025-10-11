@@ -5,12 +5,12 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 
-public class ButtonHighlight : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
+public class UIManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
 {
     public Color normalTextColor = Color.white;
     public Color highlightedTextColor = Color.red;
-    public AudioClip selectSound;  // Assign in Inspector for selection sound
-    public AudioClip clickSound;   // Assign in Inspector for click sound
+    public AudioClip selectSound;
+    public AudioClip clickSound;  
     private AudioSource audioSource;
     private TMP_Text buttonText;
 
@@ -18,7 +18,7 @@ public class ButtonHighlight : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         buttonText = GetComponentInChildren<TMP_Text>();
         buttonText.color = normalTextColor;
-        audioSource = GetComponent<AudioSource>(); // Make sure to attach AudioSource to the button
+        audioSource = GetComponent<AudioSource>();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -43,7 +43,6 @@ public class ButtonHighlight : MonoBehaviour, IPointerEnterHandler, IPointerExit
         buttonText.color = normalTextColor;
     }
 
-    // Play sound when the button is clicked
     public void OnPointerClick(PointerEventData eventData)
     {
         PlaySound(clickSound);

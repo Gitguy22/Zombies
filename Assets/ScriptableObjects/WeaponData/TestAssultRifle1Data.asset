@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed455582dafc7ec469845811f2e68e60, type: 3}
+  m_Name: TestAssultRifle1Data
+  m_EditorClassIdentifier: 
+  weaponName: FN Scar
+  weaponID: weapon_TestAR1
+  weaponPrefab: {fileID: 4118874998455669609, guid: c4f491c97d54d4e4cb265fef412b2165, type: 3}
+  weaponIcon: {fileID: 0}
+  weaponType: 0
+  positionOffset: {x: 0, y: -0.1, z: -0.3}
+  rotationOffset: {x: 0, y: 0, z: 0}
+  scale: {x: 1, y: 1, z: 1}
+  reloadPositionOffset: {x: 0.2, y: -0.3, z: 0.1}
+  reloadRotationOffset: {x: 45, y: -30, z: 0}
+  runningPositionOffset: {x: 0.1, y: -0.1, z: 0.1}
+  runningRotationOffset: {x: -40, y: 0, z: 0}
+  purchaseCost: 3000
+  ammoCost: 500
+  maxAmmoInMag: 20
+  maxReserveAmmo: 300
+  defaultAmmoInMag: 20
+  defaultReserveAmmo: 300
+  crosshairSprite: {fileID: -1259197053200823513, guid: 8ef7e85cfaaeb8a46abe2752614b72a9, type: 3}
+  crosshairLineSprite: {fileID: -5608545271755816600, guid: 8ef7e85cfaaeb8a46abe2752614b72a9, type: 3}
+  crosshairSize: 15
+  crosshairLineLength: 20
+  crosshairLineWidth: 5
+  crosshairLineDistance: 35
+  crosshairColor: {r: 1, g: 1, b: 1, a: 1}
+  dynamicCrosshair: 1
+  crosshairMaxSpread: 300
+  hideCrosshairWhenAiming: 1
+  mysteryBoxProbability: 10
+  purchaseSound: {fileID: 8300000, guid: de63a84e22aefb945a3ce2a2c7f4631b, type: 3}
+  pickupSound: {fileID: 8300000, guid: dfd5fa2766939de498f4ab9ed7b3d785, type: 3}

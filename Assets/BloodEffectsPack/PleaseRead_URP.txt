@@ -1,0 +1,5 @@
+
+
+To ensure proper functionality of URP Decal Projector prefabs, please use Unity 2022 or higher. 
+Earlier versions cause render layer script errors, 
+leading to broken scripts and unusable decal projector prefabs that need to be removed.

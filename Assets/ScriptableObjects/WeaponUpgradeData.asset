@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edfc453fc404a7241bae271a5fcc3f60, type: 3}
+  m_Name: WeaponUpgradeData
+  m_EditorClassIdentifier: 
+  upgradeMappings:
+  - baseWeapon: {fileID: 11400000, guid: 081e3e9494b739f45a16a31a90ba6648, type: 2}
+    upgradedWeapon: {fileID: 11400000, guid: 758ea2b89e5469b4d8d22b588ea60188, type: 2}
+    upgradedAmmoCostMultiplier: 2000
+  - baseWeapon: {fileID: 11400000, guid: 7db152d2def6eb0439e146fd295fbf5e, type: 2}
+    upgradedWeapon: {fileID: 11400000, guid: 7ba5466dd2537aa4e9224d43cc877833, type: 2}
+    upgradedAmmoCostMultiplier: 2000
+  - baseWeapon: {fileID: 11400000, guid: b9335c9163f13d0418f72b620a65efa5, type: 2}
+    upgradedWeapon: {fileID: 11400000, guid: b5f8eec58b6fc524d863862bbbfdc120, type: 2}
+    upgradedAmmoCostMultiplier: 2000
+  - baseWeapon: {fileID: 11400000, guid: c3fa68b9fc4195b409249a41e6d53245, type: 2}
+    upgradedWeapon: {fileID: 11400000, guid: 287c74bd691d1be4abfc0d6334e6983c, type: 2}
+    upgradedAmmoCostMultiplier: 2000
+  - baseWeapon: {fileID: 11400000, guid: 7b679123a1ff08f4d90d65fa71609379, type: 2}
+    upgradedWeapon: {fileID: 11400000, guid: 765c0b064d10e9b40927f90b810cf637, type: 2}
+    upgradedAmmoCostMultiplier: 2000
+  - baseWeapon: {fileID: 11400000, guid: 3c07b83d457adb34ba2fd0ac4ddd5179, type: 2}
+    upgradedWeapon: {fileID: 11400000, guid: 4e59eb2dbd4ec834ea2c2c27673ef200, type: 2}
+    upgradedAmmoCostMultiplier: 2000
+  - baseWeapon: {fileID: 11400000, guid: e8fdd644c66508243b74200de672963d, type: 2}
+    upgradedWeapon: {fileID: 11400000, guid: d2de239b31bb03d4e8bf76a491fcd95e, type: 2}
+    upgradedAmmoCostMultiplier: 2000
+  - baseWeapon: {fileID: 11400000, guid: 5b6e6f125c4732447adc8d685672e98f, type: 2}
+    upgradedWeapon: {fileID: 11400000, guid: 9f8a2e6fdd8fb214d9e3146462aca10a, type: 2}
+    upgradedAmmoCostMultiplier: 2000
+  - baseWeapon: {fileID: 11400000, guid: 84005894da4880f4ea900839100c964a, type: 2}
+    upgradedWeapon: {fileID: 11400000, guid: ded04ac19a893994cab23f7bfa69d868, type: 2}
+    upgradedAmmoCostMultiplier: 2000

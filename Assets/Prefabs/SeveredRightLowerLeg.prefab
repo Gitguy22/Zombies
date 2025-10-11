@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6910809418868347658}
   - component: {fileID: 5521543570046744236}
   - component: {fileID: 5973065869698591940}
+  - component: {fileID: 7175263338476174309}
   m_Layer: 0
   m_Name: SeveredRightLowerLeg
   m_TagString: Untagged
@@ -98,3 +99,17 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!64 &7175263338476174309
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1568019329617979880}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -1588933546697568490, guid: ee163e3805e032649b39f9ec157e8f0f, type: 3}

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2300000}
   m_Layer: 0
   m_Name: Light_Small_Long
-  m_TagString: Untagged
+  m_TagString: PowerLight
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295

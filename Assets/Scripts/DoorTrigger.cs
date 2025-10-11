@@ -6,6 +6,7 @@ public class DoorTrigger : MonoBehaviour
 {
     private Door doorReference;
     private LayerMask targetLayers;
+    private LayerMask players;
 
     public void SetupTrigger(Door door, LayerMask layers)
     {

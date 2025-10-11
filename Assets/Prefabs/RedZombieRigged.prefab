@@ -75,6 +75,7 @@ GameObject:
   - component: {fileID: 731079991915955503}
   - component: {fileID: 731079991915955500}
   - component: {fileID: 731079991915955501}
+  - component: {fileID: 6455601819219533588}
   m_Layer: 7
   m_Name: mixamorig:Head
   m_TagString: Untagged
@@ -123,7 +124,7 @@ Rigidbody:
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!144 &731079991915955500
@@ -138,7 +139,7 @@ CharacterJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.000000011862408, y: 2.087966, z: 0.21431826}
+  m_ConnectedAnchor: {x: 0.00000026735404, y: 2.087966, z: 0.21430734}
   serializedVersion: 2
   m_SwingAxis: {x: 0, y: 0, z: 1}
   m_TwistLimitSpring:
@@ -190,7 +191,116 @@ MonoBehaviour:
   objectPool: {fileID: 0}
   player: {fileID: 0}
   bloodGushPS: {fileID: 278966358}
+  bloodGushDuration: 3
+  bloodFadeOutDuration: 1
+  bloodGushObjects:
+  - {fileID: 0}
+  useCustomBloodDirection: 1
+  bloodOutwardDirection: {x: 0, y: 1, z: 0}
+  bloodForceMultiplier: 2
+  audioSource: {fileID: 6455601819219533588}
+  limbPopSound: {fileID: 8300000, guid: 5072a94fa6887024985a35d9cf66c949, type: 3}
+  bloodGushSound: {fileID: 8300000, guid: 2b202aff8c946d745a2ab81e2cd60819, type: 3}
+  limbCleanupTime: 20
+  fadeOutDuration: 3
+  detachedLimbLayerName: DeadZombie
   limbHP: 0
+--- !u!82 &6455601819219533588
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 731079991915955474}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 0.75
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 118
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 7.2657776
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1006869148866576419
 GameObject:
   m_ObjectHideFlags: 0
@@ -231,7 +341,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4481757489522264872}
-  m_Layer: 7
+  - component: {fileID: 373487121833631714}
+  - component: {fileID: 6118101890527178020}
+  m_Layer: 0
   m_Name: mixamorig:RightHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -253,6 +365,36 @@ Transform:
   m_Father: {fileID: 6732922971445916106}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &373487121833631714
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1095684059801981414}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 2.4426615
+  m_Center: {x: -0.24712227, y: 0.0689413, z: 0.000000017185801}
+--- !u!114 &6118101890527178020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1095684059801981414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 233324acd8d68b04c9d914e84cc38c3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageAmount: 50
+  attackCollider: {fileID: 373487121833631714}
+  attackTriggerName: attack
+  playerTag: Player
+  showDebugLogs: 0
 --- !u!1 &1275326958434736873
 GameObject:
   m_ObjectHideFlags: 0
@@ -297,6 +439,7 @@ GameObject:
   - component: {fileID: 807516026}
   - component: {fileID: 807516027}
   - component: {fileID: 8465462415298140936}
+  - component: {fileID: 9203543083822795839}
   m_Layer: 7
   m_Name: RedZombieRigged
   m_TagString: Untagged
@@ -317,6 +460,7 @@ Transform:
   m_Children:
   - {fileID: 6610038077446192759}
   - {fileID: 5699841944146710953}
+  - {fileID: 1773452367377469189}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -376,8 +520,44 @@ MonoBehaviour:
   - {fileID: 8300000, guid: ff8240148ee026c4babb53949381e1cd, type: 3}
   - {fileID: 8300000, guid: d108e9ae3908d4d479e1e41cca0188a3, type: 3}
   soundVolume: 1
+  damageSound: {fileID: 0}
+  attackSound: {fileID: 0}
+  chaseSound: {fileID: 0}
+  deathSound: {fileID: 0}
+  maxDistanceFromPlayer: 50
+  maxStuckTime: 10
+  minVelocityThreshold: 0.1
+  respawnCheckInterval: 3
+  playerLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
   zombieHP: 0
   dead: 0
+  walkerBaseSpeed: 0.8
+  runnerBaseSpeed: 2
+  sprinterBaseSpeed: 4.5
+  playerSpeed: 6
+  speedVariation: 0.4
+  useDirectPathWhenAlone: 1
+  attackRange: 1.2
+  attackDistance: 1.8
+  stationaryAttackRangeMultiplier: 1.76
+  facingRangeMultiplier: 1.5
+  avoidanceAngle: 10
+  spacingRadius: 3.2
+  spacingForce: 3
+  minAttackCooldown: 1
+  attackSpeedMultiplier: 1.4
+  standingCooldownReduction: 2
+  attackAnimationBuffer: 0.1
+  roundCooldownReductionPerRound: 0.02
+  maxRoundCooldownReduction: 0.5
+  attackSpeedIncreasePerRound: 0.05
+  maxAttackSpeedMultiplier: 3
+  targetSwitchCooldown: 2
+  targetSwitchDistanceThreshold: 0.7
+  deadZombieLayerName: DeadZombie
+  aliveZombieLayerName: Zombie
 --- !u!195 &807516027
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -385,7 +565,7 @@ NavMeshAgent:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1805852351278347229}
-  m_Enabled: 1
+  m_Enabled: 0
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 0
@@ -412,7 +592,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.5
+  m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -496,6 +676,31 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &9203543083822795839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1805852351278347229}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36413b4cc9db9734ba2603325d43f536, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetFolderPath: Assets/Audio/SoundEffectData
+  autoAssignToComponents: 1
+  useDefaultSettings: 1
+  defaultVolume: 1
+  defaultVolumeVariation: 0.05
+  defaultPitch: 1
+  defaultPitchVariation: 0.05
+  defaultIs3D: 1
+  defaultMinDistance: 1
+  defaultMaxDistance: 50
+  defaultPoolSize: 5
+  foundSounds: []
+  generatedSoundData: []
 --- !u!1 &2071609486178693047
 GameObject:
   m_ObjectHideFlags: 0
@@ -681,7 +886,7 @@ Rigidbody:
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!144 &2984600776245410185
@@ -696,7 +901,7 @@ CharacterJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: -1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.0000027753413, y: 1.7248895, z: 0.0000004172325}
+  m_ConnectedAnchor: {x: 0.0000028572977, y: 1.7248914, z: -0.00000059604645}
   serializedVersion: 2
   m_SwingAxis: {x: 0, y: 0, z: -1}
   m_TwistLimitSpring:
@@ -748,6 +953,18 @@ MonoBehaviour:
   objectPool: {fileID: 0}
   player: {fileID: 0}
   bloodGushPS: {fileID: 0}
+  bloodGushDuration: 3
+  bloodFadeOutDuration: 1
+  bloodGushObjects: []
+  useCustomBloodDirection: 1
+  bloodOutwardDirection: {x: 0, y: 1, z: 0}
+  bloodForceMultiplier: 2
+  audioSource: {fileID: 0}
+  limbPopSound: {fileID: 0}
+  bloodGushSound: {fileID: 0}
+  limbCleanupTime: 20
+  fadeOutDuration: 3
+  detachedLimbLayerName: DeadZombie
   limbHP: 0
 --- !u!1 &3003735963625295832
 GameObject:
@@ -829,7 +1046,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 4874126678125670354, guid: 2b64b8f5387730f49935f093d8c08660, type: 3}
+  - {fileID: 2100000, guid: b5c91fc04e3d1de45bca7ec121c5972a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -958,7 +1175,7 @@ Rigidbody:
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!144 &3097838080915307357
@@ -973,7 +1190,7 @@ CharacterJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: -1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: -0.6658039, y: -0.37860298, z: -0.011109416}
+  m_ConnectedAnchor: {x: -0.665803, y: -0.37860203, z: -0.011098514}
   serializedVersion: 2
   m_SwingAxis: {x: 0, y: 0, z: 1}
   m_TwistLimitSpring:
@@ -1026,6 +1243,18 @@ MonoBehaviour:
   objectPool: {fileID: 0}
   player: {fileID: 0}
   bloodGushPS: {fileID: 5076901157570415525}
+  bloodGushDuration: 3
+  bloodFadeOutDuration: 1
+  bloodGushObjects: []
+  useCustomBloodDirection: 1
+  bloodOutwardDirection: {x: 0, y: 1, z: 0}
+  bloodForceMultiplier: 2
+  audioSource: {fileID: 0}
+  limbPopSound: {fileID: 0}
+  bloodGushSound: {fileID: 0}
+  limbCleanupTime: 20
+  fadeOutDuration: 3
+  detachedLimbLayerName: DeadZombie
   limbHP: 0
 --- !u!1 &3178392685323630953
 GameObject:
@@ -1089,7 +1318,7 @@ Rigidbody:
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!114 &1950820441465033213
@@ -1244,7 +1473,7 @@ CharacterJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.00001829787, y: 2.3842392, z: -0.17658713}
+  m_ConnectedAnchor: {x: 0.00001855335, y: 2.3842378, z: -0.17657624}
   serializedVersion: 2
   m_SwingAxis: {x: 0, y: 0, z: 1}
   m_TwistLimitSpring:
@@ -1460,7 +1689,7 @@ CharacterJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.0000027753413, y: 1.725163, z: -0.00000056624407}
+  m_ConnectedAnchor: {x: 0.0000029467046, y: 1.7251661, z: -0.0000010132788}
   serializedVersion: 2
   m_SwingAxis: {x: 0, y: 0, z: -1}
   m_TwistLimitSpring:
@@ -1512,6 +1741,18 @@ MonoBehaviour:
   objectPool: {fileID: 0}
   player: {fileID: 0}
   bloodGushPS: {fileID: 0}
+  bloodGushDuration: 3
+  bloodFadeOutDuration: 1
+  bloodGushObjects: []
+  useCustomBloodDirection: 1
+  bloodOutwardDirection: {x: 0, y: 1, z: 0}
+  bloodForceMultiplier: 2
+  audioSource: {fileID: 0}
+  limbPopSound: {fileID: 0}
+  bloodGushSound: {fileID: 0}
+  limbCleanupTime: 20
+  fadeOutDuration: 3
+  detachedLimbLayerName: DeadZombie
   limbHP: 0
 --- !u!1 &5035091838040659983
 GameObject:
@@ -1720,6 +1961,51 @@ Transform:
   m_Father: {fileID: 2374048753739946462}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6242087239808475705
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1773452367377469189}
+  - component: {fileID: 985934194070477986}
+  m_Layer: 15
+  m_Name: Collider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1773452367377469189
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6242087239808475705}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1316315021953706343}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &985934194070477986
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6242087239808475705}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 1.5
+  m_Height: 23.060894
+  m_Direction: 1
+  m_Center: {x: 0, y: 11.7950535, z: 0}
 --- !u!1 &6412271887522234799
 GameObject:
   m_ObjectHideFlags: 0
@@ -1906,7 +2192,7 @@ Rigidbody:
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!144 &6953074698340528289
@@ -1921,7 +2207,7 @@ CharacterJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: -1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.66580385, y: -0.37860298, z: -0.014957563}
+  m_ConnectedAnchor: {x: 0.66580266, y: -0.37860298, z: -0.014957563}
   serializedVersion: 2
   m_SwingAxis: {x: 0, y: 0, z: 1}
   m_TwistLimitSpring:
@@ -1974,6 +2260,18 @@ MonoBehaviour:
   objectPool: {fileID: 0}
   player: {fileID: 0}
   bloodGushPS: {fileID: 209920851996674276}
+  bloodGushDuration: 3
+  bloodFadeOutDuration: 1
+  bloodGushObjects: []
+  useCustomBloodDirection: 1
+  bloodOutwardDirection: {x: 0, y: 1, z: 0}
+  bloodForceMultiplier: 2
+  audioSource: {fileID: 0}
+  limbPopSound: {fileID: 0}
+  bloodGushSound: {fileID: 0}
+  limbCleanupTime: 20
+  fadeOutDuration: 3
+  detachedLimbLayerName: DeadZombie
   limbHP: 0
 --- !u!1 &7003805666160502278
 GameObject:
@@ -2038,7 +2336,7 @@ Rigidbody:
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!144 &7003805666160502275
@@ -2053,7 +2351,7 @@ CharacterJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: -1}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 1.3403507, y: 0.59579337, z: -0.03679993}
+  m_ConnectedAnchor: {x: 1.3403486, y: 0.59579337, z: -0.03679993}
   serializedVersion: 2
   m_SwingAxis: {x: -1, y: 0, z: 0}
   m_TwistLimitSpring:
@@ -2106,6 +2404,18 @@ MonoBehaviour:
   objectPool: {fileID: 0}
   player: {fileID: 0}
   bloodGushPS: {fileID: 640612208139212915}
+  bloodGushDuration: 3
+  bloodFadeOutDuration: 1
+  bloodGushObjects: []
+  useCustomBloodDirection: 1
+  bloodOutwardDirection: {x: 0, y: 1, z: 0}
+  bloodForceMultiplier: 2
+  audioSource: {fileID: 0}
+  limbPopSound: {fileID: 0}
+  bloodGushSound: {fileID: 0}
+  limbCleanupTime: 20
+  fadeOutDuration: 3
+  detachedLimbLayerName: DeadZombie
   limbHP: 0
 --- !u!1 &7130034655935676860
 GameObject:
@@ -2170,7 +2480,7 @@ Rigidbody:
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!144 &7130034655935676857
@@ -2185,7 +2495,7 @@ CharacterJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 0, y: 0, z: -1}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: -1.3403492, y: 0.59504616, z: -0.02677702}
+  m_ConnectedAnchor: {x: -1.3403481, y: 0.5950457, z: -0.02677705}
   serializedVersion: 2
   m_SwingAxis: {x: 1, y: 0, z: 0}
   m_TwistLimitSpring:
@@ -2238,6 +2548,18 @@ MonoBehaviour:
   objectPool: {fileID: 0}
   player: {fileID: 0}
   bloodGushPS: {fileID: 7585930125600598948}
+  bloodGushDuration: 3
+  bloodFadeOutDuration: 1
+  bloodGushObjects: []
+  useCustomBloodDirection: 1
+  bloodOutwardDirection: {x: 0, y: 1, z: 0}
+  bloodForceMultiplier: 2
+  audioSource: {fileID: 0}
+  limbPopSound: {fileID: 0}
+  bloodGushSound: {fileID: 0}
+  limbCleanupTime: 20
+  fadeOutDuration: 3
+  detachedLimbLayerName: DeadZombie
   limbHP: 0
 --- !u!1 &7330228021468814608
 GameObject:
@@ -2301,7 +2623,7 @@ Rigidbody:
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!144 &7330228021468814610
@@ -2316,7 +2638,7 @@ CharacterJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: -1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: -0.000000026077343, y: 2.1904125, z: -0.0000009825892}
+  m_ConnectedAnchor: {x: 0.0000022668662, y: 2.190413, z: 0.000009913277}
   serializedVersion: 2
   m_SwingAxis: {x: 0, y: 0, z: 1}
   m_TwistLimitSpring:
@@ -2368,6 +2690,18 @@ MonoBehaviour:
   objectPool: {fileID: 0}
   player: {fileID: 0}
   bloodGushPS: {fileID: 0}
+  bloodGushDuration: 3
+  bloodFadeOutDuration: 1
+  bloodGushObjects: []
+  useCustomBloodDirection: 1
+  bloodOutwardDirection: {x: 0, y: 1, z: 0}
+  bloodForceMultiplier: 2
+  audioSource: {fileID: 0}
+  limbPopSound: {fileID: 0}
+  bloodGushSound: {fileID: 0}
+  limbCleanupTime: 20
+  fadeOutDuration: 3
+  detachedLimbLayerName: DeadZombie
   limbHP: 0
 --- !u!1 &7595615751021543339
 GameObject:
@@ -2571,7 +2905,7 @@ CharacterJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: -1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.00000014901235, y: 2.190311, z: 0.0000029383234}
+  m_ConnectedAnchor: {x: 0.0000018719677, y: 2.1903121, z: -0.000007957688}
   serializedVersion: 2
   m_SwingAxis: {x: 0, y: 0, z: 1}
   m_TwistLimitSpring:
@@ -2623,6 +2957,18 @@ MonoBehaviour:
   objectPool: {fileID: 0}
   player: {fileID: 0}
   bloodGushPS: {fileID: 0}
+  bloodGushDuration: 3
+  bloodFadeOutDuration: 1
+  bloodGushObjects: []
+  useCustomBloodDirection: 1
+  bloodOutwardDirection: {x: 0, y: 1, z: 0}
+  bloodForceMultiplier: 2
+  audioSource: {fileID: 0}
+  limbPopSound: {fileID: 0}
+  bloodGushSound: {fileID: 0}
+  limbCleanupTime: 20
+  fadeOutDuration: 3
+  detachedLimbLayerName: DeadZombie
   limbHP: 0
 --- !u!1 &9008768181334361536
 GameObject:
@@ -2748,16 +3094,33 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
---- !u!4 &278966379 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1263071316691148843, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
-  m_PrefabInstance: {fileID: 1263071316970098752}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &278966358 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1263071316691148822, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
   m_PrefabInstance: {fileID: 1263071316970098752}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &278966379 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1263071316691148843, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
+  m_PrefabInstance: {fileID: 1263071316970098752}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1485342190243498753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 278966358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc1e6c56a7ab8434d82a384a4de649a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gushDuration: 3
+  fadeOutDuration: 1
+  bloodGushObjects:
+  - {fileID: 278966358}
+  startOnAwake: 0
 --- !u!1001 &1400229486911940850
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2819,14 +3182,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
---- !u!1 &209920851996674276 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1263071316691148822, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
-  m_PrefabInstance: {fileID: 1400229486911940850}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &209920851996674265 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1263071316691148843, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
+  m_PrefabInstance: {fileID: 1400229486911940850}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &209920851996674276 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1263071316691148822, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
   m_PrefabInstance: {fileID: 1400229486911940850}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1829795995542026341
@@ -2902,14 +3265,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
---- !u!1 &640612208139212915 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1263071316691148822, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
-  m_PrefabInstance: {fileID: 1829795995542026341}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &640612208139212878 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1263071316691148843, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
+  m_PrefabInstance: {fileID: 1829795995542026341}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &640612208139212915 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1263071316691148822, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
   m_PrefabInstance: {fileID: 1829795995542026341}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6337569766468578227
@@ -2973,14 +3336,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
---- !u!4 &5076901157570415512 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1263071316691148843, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
-  m_PrefabInstance: {fileID: 6337569766468578227}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &5076901157570415525 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1263071316691148822, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
+  m_PrefabInstance: {fileID: 6337569766468578227}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5076901157570415512 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1263071316691148843, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
   m_PrefabInstance: {fileID: 6337569766468578227}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8701508541565356978
@@ -3056,13 +3419,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
---- !u!4 &7585930125600598937 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1263071316691148843, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
-  m_PrefabInstance: {fileID: 8701508541565356978}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &7585930125600598948 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1263071316691148822, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
+  m_PrefabInstance: {fileID: 8701508541565356978}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7585930125600598937 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1263071316691148843, guid: 17c518b0d72d62043ae0e21286e40a44, type: 3}
   m_PrefabInstance: {fileID: 8701508541565356978}
   m_PrefabAsset: {fileID: 0}

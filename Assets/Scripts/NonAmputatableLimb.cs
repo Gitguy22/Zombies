@@ -15,13 +15,20 @@ public class NonAmputatableLimb : MonoBehaviour
     {
         if (zombie != null && zombie.zombieHP > 0)
         {
-            if (gameObject.name == "mixamorig:Head")
+            if (zombie != null && zombie.zombieHP > 0)
             {
-                zombie.GetHit(damage * 2, hitPoint, hitForce);
-            }
-            else
-            {
-                zombie.GetHit(damage, hitPoint, hitForce);
+                // Clamp the hit force magnitude to a reasonable range
+                Vector3 clampedHitForce = Vector3.ClampMagnitude(hitForce, 400f);
+
+                if (gameObject.name == "mixamorig:Head")
+                {
+                    zombie.GetHit(damage * 2, hitPoint, clampedHitForce);
+                }
+                else
+                {
+                    //Debug.Log("zombie got hit");
+                    zombie.GetHit(damage, hitPoint, clampedHitForce);
+                }
             }
         }
     }

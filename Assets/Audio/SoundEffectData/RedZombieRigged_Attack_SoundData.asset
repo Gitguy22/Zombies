@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff8220347ee8e2b4b850083cc3dcfef3, type: 3}
+  m_Name: RedZombieRigged_Attack_SoundData
+  m_EditorClassIdentifier: 
+  clips:
+  - {fileID: 8300000, guid: 1225b0f997026d64fa600c3fd93f1a74, type: 3}
+  - {fileID: 8300000, guid: 8b9826c915109c446be0c38d54721a2d, type: 3}
+  - {fileID: 8300000, guid: 83041cb4dc7766b48a4342db7511819d, type: 3}
+  - {fileID: 8300000, guid: 9f8a1e6741a342647b9c0055e1e0a7b8, type: 3}
+  - {fileID: 8300000, guid: 24b617db03a924c4ab49c13feb18c10d, type: 3}
+  volume: 0.5
+  volumeVariation: 0
+  pitch: 1
+  pitchVariation: 0
+  is3D: 1
+  spatialBlend: 1
+  minDistance: 1
+  maxDistance: 50
+  rolloffMode: 0
+  poolSize: 15
+  loop: 0
+  cooldown: 0

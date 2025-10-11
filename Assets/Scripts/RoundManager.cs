@@ -1,311 +1,606 @@
-using UnityEngine;
-using TMPro;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 [System.Serializable]
 public class ObstacleDependentSpawnPoints
 {
-    public GameObject obstacle; // The obstacle that needs to be destroyed
-    public List<GameObject> spawnPoints; // The spawn points that will be activated if the obstacle is destroyed
+    public GameObject obstacle;
+    public List<GameObject> spawnPoints;
 }
 
 [System.Serializable]
 public class MapArea
 {
     public string areaName;
-    public Collider areaCollider; // Collider for the area
-    public List<GameObject> spawnPoints; // List of regular spawn points in the area
-    public List<ObstacleDependentSpawnPoints> obstacleDependentSpawnPoints; // List of obstacle-dependent spawn points
+    public Collider areaCollider;
+    public List<GameObject> spawnPoints;
+    public List<ObstacleDependentSpawnPoints> obstacleDependentSpawnPoints;
 }
 
 public class RoundManager : MonoBehaviour
 {
-    public int currentRound = 1;
+    [Header("Round Data")]
+    [Tooltip("Assign the RoundData scriptable object here")]
+    public RoundData roundData;
+
+    [Header("Zombie Settings")]
     public float zombiesLeft;
     public int zombiesOnMap;
+    public int zombiesAlive;
     public int playersInGame;
 
+    [Header("Zombie Respawn System")]
+    [Tooltip("Maximum distance before zombie gets respawned")]
+    [SerializeField] float maxZombieDistance = 50f;
+    [Tooltip("How often to check zombie distances (seconds)")]
+    [SerializeField] float distanceCheckInterval = 3f;
+    [Tooltip("Minimum distance from spawn point to avoid instant respawn")]
+    [SerializeField] float minSpawnDistance = 5f;
+    private float nextDistanceCheck = 0f;
+
+    [Header("Spawning Settings")]
+    [SerializeField] float spawnInterval = 1f; // Time between spawns
+    [SerializeField] float spawnPointCooldown = 3f; // Cooldown per spawn point
+    private float nextSpawnTime = 0f;
+
+    [Header("Mutant Settings")]
+    public MutantSpawner mutantSpawner;
+
+    [Header("Map Settings")]
     public List<MapArea> mapAreas;
     private List<GameObject> activeSpawnPoints;
 
+    [Header("Prefabs")]
     public GameObject zombiePrefab;
     public GameObject player;
 
-    public TextMeshProUGUI roundText;
-
+    [Header("Audio")]
     public AudioClip roundStartClip;
     public AudioClip roundEndClip;
 
+    [Header("Debug")]
+    [SerializeField] bool enableDebugLogs = true;
+
     private AudioSource audioSource;
-
-    private MapArea currentArea;
-
-    // Dictionary to track the last spawn time for each spawn point
+    public MapArea currentArea;
     private Dictionary<GameObject, float> spawnPointLastSpawnTime;
-
-    // Reference to the ZombiePool
     private ZombiePool zombiePool;
-
-    // Flag to track if the round is ending
     private bool isRoundEnding = false;
+    private List<GameObject> allPlayers = new List<GameObject>();
 
-    void Start()
+    private void Start()
     {
-        // Get the ZombiePool reference
-        zombiePool = ZombiePool.Instance;
-
-        // If ZombiePool doesn't exist, create one
-        if (zombiePool == null)
+        // Reset round data at game start just to saffe
+        if (roundData != null)
         {
-            GameObject poolObject = new GameObject("ZombiePool");
-            zombiePool = poolObject.AddComponent<ZombiePool>();
+            roundData.ResetRoundData();
+            //Debug.Log("Round data reset at game start");
         }
 
-        // Initialize the zombie pool with our zombie prefab
-        zombiePool.Initialize(zombiePrefab, 30);
+        StartCoroutine(InitializeRoundManager());
+    }
 
-        RoundStart();
+    private IEnumerator InitializeRoundManager()
+    {
+        //Debug.Log("RoundManager initializing...");
+
+        // Wait a frame to ensure all objects are initialized
+        yield return null;
+
+        // Validate essential components
+        if (!ValidateEssentialComponents())
+        {
+            //Debug.LogError("RoundManager initialization failed - missing essential components!");
+            yield break;
+        }
+
+        // Initialize collections
         activeSpawnPoints = new List<GameObject>();
         spawnPointLastSpawnTime = new Dictionary<GameObject, float>();
-
         audioSource = GetComponent<AudioSource>();
 
-        // Assuming the player starts in the first defined area
-        if (mapAreas.Count > 0)
+        // Find mutant spawner
+        if (mutantSpawner == null)
         {
-            SetCurrentArea(mapAreas[0]);
+            mutantSpawner = FindObjectOfType<MutantSpawner>();
         }
 
-        // Update the round text at the start
-        UpdateRoundText();
+        // Initialize zombie counters
+        zombiesLeft = 0;
+        zombiesOnMap = 0;
+        zombiesAlive = 0;
 
-        // Play round start music
-        PlayRoundAudio(roundStartClip);
+        // Find and validate players
+        if (!InitializePlayers())
+        {
+            //Debug.LogError("No valid players found!");
+            yield break;
+        }
 
-        playersInGame = GameObject.FindGameObjectsWithTag("Player").Length;
+        // Initialize map areas
+        if (!InitializeMapAreas())
+        {
+            //Debug.LogError("No valid map areas found!");
+            yield break;
+        }
+
+        // Initialize zombie pool
+        if (!InitializeZombiePool())
+        {
+            //Debug.LogError("Failed to initialize zombie pool!");
+            yield break;
+        }
+
+        // Initialize round data
+        roundData.SetCurrentRound(0);
+        roundData.SetRoundActive(false);
+
+        playersInGame = allPlayers.Count;
+        //Debug.Log($"RoundManager initialized successfully with {playersInGame} players");
+
+        // Start the first round after a short delay
+        yield return new WaitForSeconds(1f);
+        StartFirstRound();
+    }
+
+
+    private bool ValidateEssentialComponents()
+    {
+        bool isValid = true;
+
+        if (roundData == null)
+        {
+            //Debug.LogError("RoundData not assigned to RoundManager!");
+            isValid = false;
+        }
+
+        if (zombiePrefab == null)
+        {
+            //Debug.LogError("Zombie Prefab not assigned to RoundManager!");
+            isValid = false;
+        }
+        else
+        {
+            // Check if zombie prefab has ZombieAI
+            ZombieAI zombieAI = zombiePrefab.GetComponent<ZombieAI>();
+            if (zombieAI == null)
+            {
+                //Debug.LogError(" Zombie Prefab is missing ZombieAI component!");
+                isValid = false;
+            }
+        }
+
+        if (mapAreas == null || mapAreas.Count == 0)
+        {
+            //Debug.LogError(" No Map Areas defined in RoundManager!");
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    private bool InitializePlayers()
+    {
+        RefreshPlayerList();
+
+        if (allPlayers.Count == 0)
+        {
+            //Debug.LogError(" No players found! Make sure player objects have 'Player' tag.");
+            return false;
+        }
+
+        // Set main player reference if not set
+        if (player == null && allPlayers.Count > 0)
+        {
+            player = allPlayers[0];
+        }
+
+        //Debug.Log($" Found {allPlayers.Count} players");
+        return true;
+    }
+
+    private bool InitializeMapAreas()
+    {
+        if (mapAreas.Count == 0)
+        {
+            return false;
+        }
+
+        // Validate first area and set as current
+        MapArea firstArea = mapAreas[0];
+        if (firstArea == null)
+        {
+            //Debug.LogError("First map area is null!");
+            return false;
+        }
+
+        if (firstArea.spawnPoints == null || firstArea.spawnPoints.Count == 0)
+        {
+            //Debug.LogError($"First map area '{firstArea.areaName}' has no spawn points!");
+            return false;
+        }
+
+        SetCurrentArea(firstArea);
+        //Debug.Log($" Initialized with area: {firstArea.areaName} ({firstArea.spawnPoints.Count} spawn points)");
+        return true;
+    }
+
+
+    private bool InitializeZombiePool()
+    {
+        // Get or create zombie pool
+        zombiePool = ZombiePool.Instance;
+        if (zombiePool == null)
+        {
+            //Debug.LogWarning(" ZombiePool.Instance is null, looking for ZombiePool in scene...");
+            zombiePool = FindObjectOfType<ZombiePool>();
+
+            if (zombiePool == null)
+            {
+                //Debug.LogError(" No ZombiePool found in scene! Add ZombiePool script to a GameObject.");
+                return false;
+            }
+        }
+
+        // Initialize the pool
+        if (!zombiePool.IsInitialized())
+        {
+            //Debug.Log(" Initializing ZombiePool...");
+            zombiePool.Initialize(zombiePrefab, 30);
+
+            // Verify initialization
+            if (!zombiePool.IsInitialized())
+            {
+                //Debug.LogError(" Failed to initialize ZombiePool!");
+                return false;
+            }
+        }
+
+        //Debug.Log($" ZombiePool ready: {zombiePool.GetPoolStatus()}");
+        return true;
     }
 
     void Update()
     {
-        // Skip updates if the round is ending
+        if (isRoundEnding || !roundData.IsRoundActive)
+        {
+            return;
+        }
+
+        CheckPlayerArea();
+        HandleZombieSpawning();
+        CheckDestroyedObstacles();  
+        UpdateZombieCounts();  
+    }
+    private void HandleZombieSpawning()
+    {
+        // Check if we can spawn zombies
+        if (zombiesLeft <= 0 || Time.time < nextSpawnTime)
+        {
+            return;
+        }
+
+        int maxZombiesOnMap = GetMaxZombiesOnMap();
+        if (zombiesOnMap >= maxZombiesOnMap)
+        {
+            if (enableDebugLogs)
+            {
+                //Debug.Log($"Max zombies on map reached: {zombiesOnMap}/{maxZombiesOnMap}");
+            }
+            return;
+        }
+
+        // Try to spawn a zombie
+        if (SpawnZombie())
+        {
+            nextSpawnTime = Time.time + spawnInterval;
+        }
+    }
+
+    private void UpdateZombieCounts()
+    {
+        if (zombiePool != null)
+        {
+            zombiesOnMap = zombiePool.ActiveZombieCount();
+        }
+    }
+
+
+    public bool SpawnZombie()
+    {
+        if (activeSpawnPoints.Count == 0)
+        {
+            //Debug.LogError("No active spawn points available!");
+            return false;
+        }
+
+        if (zombiePool == null)
+        {
+            //Debug.LogError("ZombiePool is null!");
+            return false;
+        }
+
+        if (!zombiePool.IsInitialized())
+        {
+            //Debug.LogError("ZombiePool is not initialized!");
+            return false;
+        }
+
+        // Find available spawn points
+        List<GameObject> availableSpawnPoints = GetAvailableSpawnPoints();
+        if (availableSpawnPoints.Count == 0)
+        {
+            if (enableDebugLogs)
+            {
+                //Debug.Log("No available spawn points (all on cooldown)");
+            }
+            return false;
+        }
+
+        // Select random spawn point
+        GameObject spawnPoint = availableSpawnPoints[Random.Range(0, availableSpawnPoints.Count)];
+
+        // Spawn zombie
+        GameObject zombie = zombiePool.GetZombie(spawnPoint.transform.position, spawnPoint.transform.rotation);
+
+        if (zombie == null)
+        {
+            //Debug.LogError("ZombiePool.GetZombie() returned null!");
+            return false;
+        }
+
+        // Configure zombie
+        ZombieAI zombieAI = zombie.GetComponent<ZombieAI>();
+        if (zombieAI != null)
+        {
+            zombieAI.player = GetNearestPlayer(spawnPoint.transform.position);
+            zombieAI.roundManager = gameObject;
+        }
+        else
+        {
+            //Debug.LogError($"Spawned zombie '{zombie.name}' has no ZombieAI component!");
+        }
+
+        // Update counters
+        zombiesLeft--;
+        zombiesAlive++;
+        spawnPointLastSpawnTime[spawnPoint] = Time.time;
+
+        if (enableDebugLogs)
+        {
+            //Debug.Log($"Spawned zombie at {spawnPoint.name}: {zombiesAlive} alive, {zombiesLeft} left to spawn");
+        }
+
+        return true;
+    }
+
+    private List<GameObject> GetAvailableSpawnPoints()
+    {
+        List<GameObject> availableSpawnPoints = new List<GameObject>();
+        float currentTime = Time.time;
+
+        foreach (GameObject spawnPoint in activeSpawnPoints)
+        {
+            if (spawnPoint == null) continue;
+
+            if (!spawnPointLastSpawnTime.ContainsKey(spawnPoint) ||
+                currentTime - spawnPointLastSpawnTime[spawnPoint] >= spawnPointCooldown)
+            {
+                availableSpawnPoints.Add(spawnPoint);
+            }
+        }
+
+        return availableSpawnPoints;
+    }
+
+    public void NotifyZombieDeath()
+    {
         if (isRoundEnding)
         {
             return;
         }
 
-        // Check what area they're in.
-        CheckPlayerArea();
+        zombiesAlive--;
 
-        int maxZombiesOnMap = GetMaxZombiesOnMap();
-
-        if (zombiesOnMap < maxZombiesOnMap) // Stop spawning zombies if there are already max on the map
+        if (enableDebugLogs)
         {
-            if (zombiesLeft > 0)
-            {
-                SpawnZombie();
-            }
+            //Debug.Log($"Zombie died: {zombiesAlive} alive, {zombiesLeft} left to spawn");
         }
 
-        // Check for destroyed obstacles and update spawn points
-        CheckDestroyedObstacles();
-
-        // Update zombiesOnMap based on the active zombies count
-        if (zombiePool != null)
+        // Check if round should end
+        if (zombiesLeft <= 0 && zombiesAlive <= 0)
         {
-            zombiesOnMap = zombiePool.ActiveZombieCount();
+            //Debug.Log("Last zombie killed - ending round");
+            RoundEnd();
+        }
+    }
 
-            // Check if we need to end the round
-            if (zombiesLeft <= 0 && zombiesOnMap <= 0 && !isRoundEnding)
+    void RefreshPlayerList()
+    {
+        allPlayers.Clear();
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        allPlayers.AddRange(players);
+
+        if (player == null && allPlayers.Count > 0)
+        {
+            player = allPlayers[0];
+        }
+    }
+
+
+    public void HandleDistantZombieReturn()
+    {
+        if (zombiesLeft >= 0)
+        {
+            zombiesLeft++;
+            zombiesOnMap--;
+            zombiesAlive--; 
+
+            if (enableDebugLogs)
             {
-                RoundEnd();
+                //Debug.Log($"Distant zombie returned to pool. Alive: {zombiesAlive}, Left to spawn: {zombiesLeft}, On map: {zombiesOnMap}");
             }
         }
     }
 
+    /// <summary>
+    /// Get the nearest player to a specific position
+    /// </summary>
+    GameObject GetNearestPlayer(Vector3 position)
+    {
+        GameObject nearestPlayer = null;
+        float closestDistance = float.MaxValue;
+
+        foreach (GameObject player in allPlayers)
+        {
+            if (player == null) continue;
+
+            float distance = Vector3.Distance(position, player.transform.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                nearestPlayer = player;
+            }
+        }
+
+        return nearestPlayer ?? (allPlayers.Count > 0 ? allPlayers[0] : null);
+    }
+
     void CheckPlayerArea()
     {
-        foreach (var area in mapAreas)
+        foreach (GameObject currentPlayer in allPlayers)
         {
-            // Check if the player is within the bounds of the current area's collider
-            if (area.areaCollider.bounds.Contains(player.transform.position))
+            if (currentPlayer == null) continue;
+
+            foreach (var area in mapAreas)
             {
-                // If the player is in a new area, update the current area
-                if (currentArea != area)
+                if (area?.areaCollider != null && area.areaCollider.bounds.Contains(currentPlayer.transform.position))
                 {
-                    SetCurrentArea(area);
+                    if (currentArea != area)
+                    {
+                        SetCurrentArea(area);
+                    }
+                    return;
                 }
-                break; // Exit the loop once the relevant area is found
             }
         }
     }
 
     void SetCurrentArea(MapArea area)
     {
+        if (area == null)
+        {
+            //Debug.LogError("Trying to set null area!");
+            return;
+        }
+
         currentArea = area;
         activeSpawnPoints.Clear();
-        activeSpawnPoints.AddRange(area.spawnPoints);
 
-        Debug.Log("Player entered area: " + area.areaName);
+        if (area.spawnPoints != null)
+        {
+            // Filter out null spawn points
+            foreach (GameObject spawnPoint in area.spawnPoints)
+            {
+                if (spawnPoint != null)
+                {
+                    activeSpawnPoints.Add(spawnPoint);
+                }
+            }
+        }
 
-        // Initialize last spawn times for new active spawn points
+        // Initialize spawn point cooldowns
         foreach (var spawnPoint in activeSpawnPoints)
         {
             if (!spawnPointLastSpawnTime.ContainsKey(spawnPoint))
             {
-                spawnPointLastSpawnTime[spawnPoint] = -Mathf.Infinity; // Set to negative infinity to allow immediate spawning
+                spawnPointLastSpawnTime[spawnPoint] = -Mathf.Infinity;
             }
         }
+
+        //Debug.Log($"🗺️ Entered area: {area.areaName} with {activeSpawnPoints.Count} spawn points");
     }
 
     void CheckDestroyedObstacles()
     {
-        // Check if currentArea is null to avoid null reference
-        if (currentArea == null)
-        {
-            Debug.LogWarning("currentArea is null. Ensure it is properly initialized.");
-            return;
-        }
-
-        // Check if obstacleDependentSpawnPoints is null
-        if (currentArea.obstacleDependentSpawnPoints == null)
-        {
-            Debug.LogWarning("obstacleDependentSpawnPoints is null in currentArea.");
-            return;
-        }
+        if (currentArea?.obstacleDependentSpawnPoints == null) return;
 
         foreach (var obstacleSet in currentArea.obstacleDependentSpawnPoints)
         {
-            // Check if obstacleSet is null
-            if (obstacleSet == null)
-            {
-                Debug.LogWarning("obstacleSet is null. Skipping.");
-                continue; // Skip this iteration
-            }
+            if (obstacleSet?.obstacle == null) continue;
 
-            // Check if the obstacle is null
-            if (obstacleSet.obstacle == null)
+            IInteractable interactable = obstacleSet.obstacle.GetComponent<IInteractable>();
+            if (interactable?.IsPaidFor() == true && obstacleSet.spawnPoints != null)
             {
-                // If the obstacle is destroyed, handle the spawn points
-                if (obstacleSet.spawnPoints != null)
+                foreach (var spawnPoint in obstacleSet.spawnPoints)
                 {
-                    foreach (var spawnPoint in obstacleSet.spawnPoints)
+                    if (spawnPoint != null && !activeSpawnPoints.Contains(spawnPoint))
                     {
-                        // Check if spawnPoint is null
-                        if (spawnPoint == null)
+                        activeSpawnPoints.Add(spawnPoint);
+                        if (!spawnPointLastSpawnTime.ContainsKey(spawnPoint))
                         {
-                            Debug.LogWarning("spawnPoint is null. Skipping.");
-                            continue; // Skip this spawn point if it's null
-                        }
-
-                        if (!activeSpawnPoints.Contains(spawnPoint))
-                        {
-                            activeSpawnPoints.Add(spawnPoint);
-
-                            // Initialize last spawn time for the new spawn point
-                            if (!spawnPointLastSpawnTime.ContainsKey(spawnPoint))
-                            {
-                                spawnPointLastSpawnTime[spawnPoint] = -Mathf.Infinity;
-                            }
+                            spawnPointLastSpawnTime[spawnPoint] = -Mathf.Infinity;
                         }
                     }
                 }
-                else
-                {
-                    Debug.LogWarning("spawnPoints is null for an obstacleSet.");
-                }
             }
-        }
-    }
-
-    public void SpawnZombie()
-    {
-        if (activeSpawnPoints.Count == 0)
-        {
-            //Debug.LogWarning("No active spawn points available.");
-            return;
-        }
-
-        // Find an available spawn point that hasn't been used in the last 3 seconds
-        float currentTime = Time.time;
-        List<GameObject> availableSpawnPoints = new List<GameObject>();
-
-        foreach (var spawnPoint in activeSpawnPoints)
-        {
-            if (currentTime - spawnPointLastSpawnTime[spawnPoint] >= 3.0f)
-            {
-                availableSpawnPoints.Add(spawnPoint);
-            }
-        }
-
-        if (availableSpawnPoints.Count == 0)
-        {
-            //Debug.LogWarning("No available spawn points (waiting for cooldown).");
-            return;
-        }
-
-        // Get a random available spawn point
-        int index = Random.Range(0, availableSpawnPoints.Count);
-        GameObject randomSpawnPoint = availableSpawnPoints[index];
-
-        // Use zombie pool to get a zombie
-        if (zombiePool != null)
-        {
-            GameObject zombie = zombiePool.GetZombie(randomSpawnPoint.transform.position, Quaternion.identity);
-
-            if (zombie != null)
-            {
-                // Configure the zombie
-                ZombieAI zombieAI = zombie.GetComponent<ZombieAI>();
-                if (zombieAI != null)
-                {
-                    zombieAI.player = player;
-                    zombieAI.roundManager = gameObject;
-                }
-
-                zombiesLeft--;
-
-                // Update the last spawn time for the chosen spawn point
-                spawnPointLastSpawnTime[randomSpawnPoint] = currentTime;
-            }
-        }
-        else
-        {
-            Debug.LogError("ZombiePool is not available!");
         }
     }
 
     public void RoundEnd()
     {
-        if (isRoundEnding)
-        {
-            return; // Prevent multiple calls
-        }
+        if (isRoundEnding) return;
 
         isRoundEnding = true;
-        Debug.Log("Round " + currentRound + " ended.");
+        roundData.SetRoundActive(false);
 
-        // Play round end music
+        int currentRound = roundData.CurrentRound;
+        //Debug.Log($"🏁 Round {currentRound} ended");
+
         PlayRoundAudio(roundEndClip);
 
-        StartCoroutine(StartNextRoundAfterDelay(10f)); // Start next round after a 16-second delay
+        if (currentRound > 0)
+        {
+            StartCoroutine(StartNextRoundAfterDelay(10f));
+        }
+        else
+        {
+            StartFirstRound();
+        }
+    }
+
+    private void StartFirstRound()
+    {
+        //Debug.Log("🎯 Starting first round...");
+        StartNextRound();
     }
 
     private IEnumerator StartNextRoundAfterDelay(float delaySeconds)
     {
+        //Debug.Log($"⏰ Next round in {delaySeconds} seconds");
         yield return new WaitForSeconds(delaySeconds);
+        StartNextRound();
+    }
 
-        currentRound++;
-        Debug.Log("Round " + currentRound + " started.");
+    private void StartNextRound()
+    {
+        int nextRound = roundData.CurrentRound + 1;
+        roundData.SetCurrentRound(nextRound);
+        roundData.SetRoundActive(true);
 
-        // Clear any remaining zombies
+        //Debug.Log($"🎮 Round {nextRound} started");
+
+        // Clear remaining zombies
         if (zombiePool != null)
         {
             zombiePool.ReturnAllZombies();
         }
 
+        // Reset counters
         zombiesOnMap = 0;
-        UpdateRoundText();
+        zombiesAlive = 0;
+
         PlayRoundAudio(roundStartClip);
         RoundStart();
 
@@ -314,67 +609,29 @@ public class RoundManager : MonoBehaviour
 
     private void RoundStart()
     {
-        // Setting zombies for each round using if statements like in original code
-        if (currentRound == 1)
-        {
-            zombiesLeft = 6;
-        }
-        else if (currentRound == 2)
-        {
-            zombiesLeft = 8;
-        }
-        else if (currentRound == 3)
-        {
-            zombiesLeft = 13;
-        }
-        else if (currentRound == 4)
-        {
-            zombiesLeft = 18;
-        }
-        else if (currentRound == 5)
-        {
-            zombiesLeft = 24;
-        }
-        else if (currentRound == 6)
-        {
-            zombiesLeft = 27;
-        }
-        else if (currentRound == 7)
-        {
-            zombiesLeft = 28;
-        }
-        else if (currentRound == 8)
-        {
-            zombiesLeft = 28;
-        }
-        else if (currentRound == 9)
-        {
-            zombiesLeft = 29;
-        }
-        else // For rounds 10 and above - fixed formula to properly scale
-        {
-            // Better formula that increases with round number rather than decreasing
-            zombiesLeft = 30 + (currentRound - 9) * 3;
-        }
+        int currentRound = roundData.CurrentRound;
 
-        Debug.Log($"Round {currentRound} starting with {zombiesLeft} zombies to spawn");
+        // Set zombie count based on round
+        if (currentRound == 1) zombiesLeft = 6;
+        else if (currentRound == 2) zombiesLeft = 8;
+        else if (currentRound == 3) zombiesLeft = 13;
+        else if (currentRound == 4) zombiesLeft = 18;
+        else if (currentRound == 5) zombiesLeft = 24;
+        else if (currentRound == 6) zombiesLeft = 27;
+        else if (currentRound == 7) zombiesLeft = 28;
+        else if (currentRound == 8) zombiesLeft = 28;
+        else if (currentRound == 9) zombiesLeft = 29;
+        else zombiesLeft = 30 + (currentRound - 9) * 3;
+
+        //Debug.Log($" Round {currentRound}: {zombiesLeft} zombies to spawn");
     }
 
     private int GetMaxZombiesOnMap()
     {
         int baseZombies = 24;
         int additionalZombies = playersInGame * 6;
-        int roundScaling = Mathf.FloorToInt(currentRound * 0.5f); // Small increase per round
-
+        int roundScaling = Mathf.FloorToInt(roundData.CurrentRound * 0.5f);
         return baseZombies + additionalZombies + roundScaling;
-    }
-
-    private void UpdateRoundText()
-    {
-        if (roundText != null)
-        {
-            roundText.text = "" + currentRound;
-        }
     }
 
     private void PlayRoundAudio(AudioClip clip)
@@ -383,6 +640,22 @@ public class RoundManager : MonoBehaviour
         {
             audioSource.clip = clip;
             audioSource.Play();
+        }
+    }
+
+    // Debug methods
+    [ContextMenu("Force Spawn Zombie")]
+    public void DebugForceSpawn()
+    {
+        SpawnZombie();
+    }
+
+    [ContextMenu("Debug Pool Status")]
+    public void DebugPoolStatus()
+    {
+        if (zombiePool != null)
+        {
+            //Debug.Log($"Pool Status: {zombiePool.GetPoolStatus()}");
         }
     }
 }

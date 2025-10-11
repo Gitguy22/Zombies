@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,45 +10,58 @@ public class PlayerInteraction : MonoBehaviour
     public float interactionDistance = 4f;
     public LayerMask interactableLayer;
     public Camera playerCamera;
-    public float holdTime = 1.0f;  // Time in seconds needed to hold the button
+    public float holdTime = 1.0f;
 
     [Header("UI Elements")]
     public TextMeshProUGUI interactionText;
     public GameObject interactionPrompt;
+
+    [Header("Controller")]
+    [SerializeField] bool showControllerPrompts = true;
 
     // Private variables
     private float currentHoldTime = 0f;
     private bool isHolding = false;
     private IInteractable currentInteractable;
     private GameObject currentInteractableObject;
-    private PlayerInputs playerInput;
+    private PlayerInput playerInput;
     private InputAction interactAction;
+    private PlayerController playerController;
 
     private void Start()
     {
         if (playerCamera == null)
-            playerCamera = Camera.main;
+            playerCamera = GetComponentInChildren<Camera>();
 
         if (interactionPrompt != null)
             interactionPrompt.SetActive(false);
 
-        // Initialize input actions
-        playerInput = new PlayerInputs();
-        playerInput.Enable();
+        playerInput = GetComponent<PlayerInput>();
+        playerController = GetComponent<PlayerController>();
 
-        interactAction = playerInput.OnFoot.InteractAction;
-        interactAction.performed += OnInteractStarted;
-        interactAction.canceled += OnInteractCanceled;
+        if (playerInput != null)
+        {
+            interactAction = playerInput.actions["InteractAction"];
+            interactAction.performed += OnInteractStarted;
+            interactAction.canceled += OnInteractCanceled;
+        }
     }
 
     private void OnDisable()
     {
-        interactAction.performed -= OnInteractStarted;
-        interactAction.canceled -= OnInteractCanceled;
+        if (interactAction != null)
+        {
+            interactAction.performed -= OnInteractStarted;
+            interactAction.canceled -= OnInteractCanceled;
+        }
     }
 
     private void Update()
     {
+        // Check pause state
+        if (PauseManager.Instance != null && PauseManager.Instance.IsPaused())
+            return;
+
         CheckForInteractable();
         ProcessInteraction();
     }
@@ -65,10 +78,38 @@ public class PlayerInteraction : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, interactionDistance, interactableLayer, QueryTriggerInteraction.Ignore))
         {
-            // First try to get IInteractable directly from the hit object
+/*            // Debug what we hit
+            Debug.Log($"Hit object: {hit.collider.name}");
+            Debug.Log($"Hit object layer: {hit.collider.gameObject.layer} ({LayerMask.LayerToName(hit.collider.gameObject.layer)})");
+            Debug.Log($"Hit object position: {hit.collider.transform.position}");
+            Debug.Log($"Hit object root: {hit.collider.transform.root.name}");*/
+
+            // Check ALL IInteractable components on this object
+            IInteractable[] interactables = hit.collider.GetComponents<IInteractable>();
+            //Debug.Log($"IInteractable components on hit object: {interactables.Length}");
+
+            foreach (IInteractable inter in interactables)
+            {
+                MonoBehaviour component = inter as MonoBehaviour;
+                if (component != null)
+                {
+                    //Debug.Log($"- Component: {component.GetType().Name} (enabled: {component.enabled}) (active: {component.gameObject.activeInHierarchy})");
+                }
+            }
+
+            // Check for IInteractable in parent
+            IInteractable parentInteractable = hit.collider.GetComponentInParent<IInteractable>();
+            if (parentInteractable != null)
+            {
+                MonoBehaviour parentComp = parentInteractable as MonoBehaviour;
+                if (parentComp != null)
+                {
+                    //Debug.Log($"Parent has IInteractable: {parentComp.GetType().Name} on {parentComp.gameObject.name} (enabled: {parentComp.enabled})");
+                }
+            }
+
             IInteractable interactable = hit.collider.GetComponent<IInteractable>();
 
-            // If null, try to get it from the parent object
             if (interactable == null)
                 interactable = hit.collider.GetComponentInParent<IInteractable>();
 
@@ -86,7 +127,6 @@ public class PlayerInteraction : MonoBehaviour
             }
         }
 
-        // Rest of method remains unchanged
         if (currentInteractable != null)
         {
             interactableTimer += Time.deltaTime;
@@ -99,31 +139,50 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-
     private void UpdateInteractionUI(bool show)
     {
         if (interactionPrompt != null)
         {
             if (show && interactionText != null && currentInteractable != null)
             {
-                // Check if the item has already been paid for
                 if (currentInteractable.IsPaidFor())
                 {
                     interactionPrompt.SetActive(false);
                     return;
                 }
 
-                string itemName = currentInteractable.GetItemName();
+                string newText = currentInteractable.GetItemName();
                 int cost = currentInteractable.GetCost();
-                string buttonName = interactAction.GetBindingDisplayString();
 
-                interactionText.text = $"Hold <b>{buttonName}</b> to buy {itemName} for {cost} points";
+                // Get the correct button prompt based on input device
+                string buttonName = GetButtonPrompt();
+
+                interactionText.text = $"Hold {buttonName} to {newText}";
                 interactionPrompt.SetActive(true);
             }
             else
             {
                 interactionPrompt.SetActive(false);
             }
+        }
+    }
+
+    private string GetButtonPrompt()
+    {
+        if (playerInput == null) return "[Interact]";
+
+        // Check if using gamepad
+        bool usingGamepad = playerInput.currentControlScheme == "Gamepad";
+
+        if (usingGamepad && showControllerPrompts)
+        {
+            // Return appropriate controller button icon/text
+            return "[X]";
+        }
+        else
+        {
+            // Return keyboard key
+            return $"[{interactAction.GetBindingDisplayString()}]";
         }
     }
 

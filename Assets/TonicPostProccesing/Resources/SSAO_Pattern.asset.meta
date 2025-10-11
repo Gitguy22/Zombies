@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ef2abf928b3324453a512f9120f36b53
+timeCreated: 1485876645
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 57053
+  packageName: Simple SSAO
+  packageVersion: 1.4.3
+  assetPath: Assets/SSSAO/Resources/AxisPattern.asset
+  uploadId: 209573

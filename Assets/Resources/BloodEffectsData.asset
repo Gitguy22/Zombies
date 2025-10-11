@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6eb79742e5a60545ba86fda9ad8922d, type: 3}
+  m_Name: BloodEffectsData
+  m_EditorClassIdentifier: 
+  bloodSplashPrefabs:
+  - {fileID: 8007369982305464528, guid: dadcea4799bc74244b66c87b6b4d8952, type: 3}
+  - {fileID: 8007369982305464528, guid: 3e154a22ec2bce44a9db833a8bee2c2e, type: 3}
+  - {fileID: 2834077435049808890, guid: 8ba23dd226073164c8c474b331d956a5, type: 3}
+  - {fileID: 6550804457596160986, guid: 2d4521b691ddc8d4681ec359bf5ba703, type: 3}
+  - {fileID: 4055846304957825616, guid: 681bc8e98ac366a4cb12ad41f9e085ff, type: 3}
+  - {fileID: 4055846304957825616, guid: 92f4e146d94b6de4db0041fd521dfb78, type: 3}

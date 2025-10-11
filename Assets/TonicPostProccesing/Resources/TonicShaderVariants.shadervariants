@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!200 &20000000
+ShaderVariantCollection:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TonicShaderVariants
+  m_Shaders:
+  - first: {fileID: 4800000, guid: 12bb5782492ad154ab2afc7b46538d22, type: 3}
+    second:
+      variants: []
+  - first: {fileID: 4800000, guid: 6098e59c8f9689f4eac0fab73e885466, type: 3}
+    second:
+      variants: []
+  - first: {fileID: 4800000, guid: f84ea3afd6fe4024694e0d81a88db43c, type: 3}
+    second:
+      variants: []
+  - first: {fileID: 4800000, guid: 173562a7153b56f499e20088edad8acc, type: 3}
+    second:
+      variants: []
+  - first: {fileID: 4800000, guid: a3c2f225e2ba2454ba89f0a19a44fe5d, type: 3}
+    second:
+      variants: []
+  - first: {fileID: 4800000, guid: 0d505d3a2ba81124c9bc31671092936f, type: 3}
+    second:
+      variants: []
+  - first: {fileID: 4800000, guid: 57e767f659cc0fd4c8af14f520ff8fef, type: 3}
+    second:
+      variants: []
+  - first: {fileID: 4800000, guid: 2ed3b4dcd0d9cfd44808927a79c7e057, type: 3}
+    second:
+      variants: []
+  - first: {fileID: 4800000, guid: 5e79dfebb99015247acb6527937a9679, type: 3}
+    second:
+      variants: []
+  - first: {fileID: 4800000, guid: a4515664e29fb7249ab0485a319fdad8, type: 3}
+    second:
+      variants: []
+  - first: {fileID: 4800000, guid: cbabd86d4261ee5459b6539a725b4248, type: 3}
+    second:
+      variants: []
+  - first: {fileID: 4800000, guid: 20ce75c3f0578974d95c155871110ae6, type: 3}
+    second:
+      variants: []
+  - first: {fileID: 4800000, guid: e83ab0ad3960c5f4d84e8593531f69ae, type: 3}
+    second:
+      variants: []
+  - first: {fileID: 4800000, guid: 1aea1637901d32e47b08fb4f92566163, type: 3}
+    second:
+      variants: []

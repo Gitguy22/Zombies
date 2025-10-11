@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4900874231653626061}
   - component: {fileID: 9178981160040416373}
-  - component: {fileID: 5463749913952133174}
   - component: {fileID: 6298990282924450109}
   m_Layer: 0
   m_Name: VP9 (1)
@@ -69,41 +68,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &5463749913952133174
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 415742797204639244}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69bf45291e1c4f24a8467ac62a7200e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  addBulletSpread: 0
-  weaponDamage: 35
-  bulletSpreadVariance: {x: 0.05, y: 0.05, z: 0.05}
-  shootingSystem: {fileID: 3912616131144000444}
-  barrelExit: {fileID: 6222095594225571583}
-  impactParticleSystem: {fileID: 525479643238903012, guid: 8023dc4504807284e8ea53cc948719d5, type: 3}
-  bulletTracer: {fileID: 1583628886197096565, guid: 766482bc618611d4eb42867e3fea9ce3, type: 3}
-  mask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  bulletVelocity: 150
-  maxRange: 100
-  minTrailDuration: 0.1
-  ammoInMag: 12
-  magCapacity: 12
-  ammoInReserves: 84
-  maxReserves: 120
-  ammoInMagText: {fileID: 0}
-  ammoInReservesText: {fileID: 0}
-  shootSound: {fileID: 8300000, guid: 172c957317b45804785ab6f18703352a, type: 3}
-  clickSound: {fileID: 0}
-  reloadSound: {fileID: 8300000, guid: 43a5916140dcb044e92431232cc93bba, type: 3}
-  pointManager: {fileID: 0}
 --- !u!82 &6298990282924450109
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2272,10 +2236,5 @@ PrefabInstance:
 --- !u!4 &3783980251322880754 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4300533007854612, guid: ad2ab49d0a2a17148bd51c93d977bdbc, type: 3}
-  m_PrefabInstance: {fileID: 3786439537353735910}
-  m_PrefabAsset: {fileID: 0}
---- !u!198 &3912616131144000444 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 198234346748616026, guid: ad2ab49d0a2a17148bd51c93d977bdbc, type: 3}
   m_PrefabInstance: {fileID: 3786439537353735910}
   m_PrefabAsset: {fileID: 0}
